@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+  <ul class=entries>
+  {% for entry in entries %}
+    <li> <a href="{{ url_for('show_trace', trace=id + '/' + entry['link']) }}">
+    {{ entry['title'] }}
+        </a>
+<!-- <h2>{{ entry }}</h2>-->
+  {% else %}
+    <li><em>Unbelievable.  No entries here so far</em>
+  {% endfor %}
+  </ul>
+{% endblock %}

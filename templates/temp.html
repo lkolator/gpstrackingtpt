@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+    <style type="text/css">
+      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg">
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mainDIR = '/root/geoserver/'
+        var GLOBE_WIDTH = 256; // a constant in Google's map projection
+        var west = {{start[1]}};
+        var east = {{end[0]}};
+        var angle = east - west;
+        if (angle < 0) {
+            angle += 360;
+        }
+        var pixelWidth = 256
+        var zoom1 = Math.round(Math.log(pixelWidth * 360 / angle / GLOBE_WIDTH) / Math.LN2);
+        var mapOptions = {
+          center: { lat: {{start[1]}}, lng: {{start[0]}}},
+          zoom: 14
+        };
+
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+        map.data.loadGeoJson('http://gpstracking.duckdns.org:8111/files/{{plik|safe}}.json');
+        map.data.setStyle({
+            fillColor: 'green',
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.5
+        });
+        var image = '{{ url_for('static', filename='finish_flag.png') }}';
+        var image2 = '{{ url_for('static', filename='start_flag.png') }}';
+
+        var marker = new google.maps.Marker({
+            position: { lat: {{end[1]|safe}}, lng: {{end[0]}}},
+            map: map,
+            title: 'Stop',
+            icon: image
+        });
+
+        var marker2 = new google.maps.Marker({
+            position: { lat: {{start[1]}}, lng: {{start[0]}}},
+            map: map,
+            title: 'Start',
+            icon: image2
+        });
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+  <body>
+<div id="map-canvas"></div>
+  </body>
+</html>
