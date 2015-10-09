@@ -148,8 +148,8 @@ class Trace(MethodView):
 
 class Main(MethodView):
     def get(self):
-        devices = os.listdir('devices/')
-        return render_template('index.html', devices=devices)
+        return "OK"
+        #return render_template('index.html', devices=devices)
 
 
 class Hello(MethodView):
