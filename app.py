@@ -55,7 +55,8 @@ class Main(MethodView):
 
 class Hello(MethodView):
     def get(self):
-        return 'OK'
+        di = {'aaaa':'0ff0'}
+        return json.dumps(di)
 
     def post(self):
         try:
