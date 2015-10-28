@@ -62,7 +62,7 @@ class Decoder(json.JSONDecoder):
 class Decoder2(json.JSONDecoder):
     def decode(self, obj):
         obj = obj.replace('\x27', '\x22')
-        retun json.JSONDecoder.decode(self, obj)
+        return json.JSONDecoder.decode(self, obj)
 
 
 class Main(MethodView):
@@ -73,8 +73,8 @@ class Main(MethodView):
 
 class Hello(MethodView):
     def get(self):
-        return "OK"
-        #return Response(json.dumps(CONFIG),  mimetype='application/json')
+        #return "OK"
+        return Response(json.dumps(CONFIG),  mimetype='application/json')
 
     def post(self):
         try:
