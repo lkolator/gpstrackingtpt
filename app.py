@@ -17,6 +17,24 @@ import time
 
 FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
 
+# js_frame[] =
+#"{"srn":"00000000","lat":"00000.00000X","lon":"00000.00000X","utc":"000000.00","acc":"00000","flg":"0000"}";
+# htr - HTTP tracking; 0 - off, 1 - on
+# str - SMS tracking; 0 - off, 1 - on
+# tpr - tracking period; 0 - 15s, 1 - 1min, 2 - 5min, 3 - 30min
+# pho - SMS reporting phone number; variable field length (?), must be '\0'
+# terminated
+# www - HTTP reporting address; variable field length (?), must be '\0'
+# terminated
+# prt - HTTP reporting port number
+# {"srn":"00000000","htr":"X","str":"X","tpr":""X","pho":"+000000000000","www":"0000000000000000000000000000000000000000","prt":"00000"}"
+CONFIG = {
+        'htr':'1',
+        'str':'1',
+        'tpr':'1',
+        'pho':'+48509386813'
+        }
+
 
 app = Flask(__name__)
 
@@ -44,7 +62,7 @@ class Decoder(json.JSONDecoder):
 class Decoder2(json.JSONDecoder):
     def decode(self, obj):
         obj = obj.replace('\x27', '\x22')
-        return json.JSONDecoder.decode(self, obj)
+        retun json.JSONDecoder.decode(self, obj)
 
 
 class Main(MethodView):
@@ -55,8 +73,7 @@ class Main(MethodView):
 
 class Hello(MethodView):
     def get(self):
-        di = {'aaaa':'0ff0'}
-        return Response(json.dumps(di),  mimetype='application/json')
+        return Response(json.dumps(CONFIG),  mimetype='application/json')
 
     def post(self):
         try:
