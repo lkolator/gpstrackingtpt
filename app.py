@@ -73,7 +73,8 @@ class Main(MethodView):
 
 class Hello(MethodView):
     def get(self):
-        return Response(json.dumps(CONFIG),  mimetype='application/json')
+        return "OK"
+        #return Response(json.dumps(CONFIG),  mimetype='application/json')
 
     def post(self):
         try:
