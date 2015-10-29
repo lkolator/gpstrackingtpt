@@ -18,7 +18,6 @@ import random
 
 FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
 
-# js_frame[] =
 #"{"srn":"00000000","lat":"00000.00000X","lon":"00000.00000X","utc":"000000.00","acc":"00000","flg":"0000"}";
 # htr - HTTP tracking; 0 - off, 1 - on
 # str - SMS tracking; 0 - off, 1 - on
