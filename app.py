@@ -13,6 +13,7 @@ import time
 import glob
 import pickle
 import time
+import random
 
 
 FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
@@ -28,19 +29,25 @@ FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
 # terminated
 # prt - HTTP reporting port number
 # {"srn":"00000000","htr":"X","str":"X","tpr":""X","pho":"+000000000000","www":"0000000000000000000000000000000000000000","prt":"00000"}"
-CONFIG = {
+config = {
         'htr':'1',
         'str':'1',
         'tpr':'1',
         'pho':'+48509386813'
         }
 
+cfg = { 'cfg':'1' }
 
 app = Flask(__name__)
 
 
 last_time = 0
 counter = 0
+
+def random_config():
+    config['htr'] = random.randint(0,1)
+    config['str'] = random.randint(0,1)
+    config['tpr'] = random.randint(0,3)
 
 
 class Decoder(json.JSONDecoder):
@@ -74,7 +81,8 @@ class Main(MethodView):
 class Hello(MethodView):
     def get(self):
         #return "OK"
-        return Response(json.dumps(CONFIG),  mimetype='application/json')
+        random_config()
+        return Response(json.dumps(config),  mimetype='application/json')
 
     def post(self):
         try:
@@ -83,7 +91,8 @@ class Hello(MethodView):
             gps = json.loads(request.data, cls=Decoder)
             results = Geocoder.reverse_geocode(gps['lat'], gps['lon'])
             print results
-            return unicode(results[0])
+            #return unicode(results[0])
+            return Response(json.dumps(cfg),  mimetype='application/json')
         except:
             return "OK"
 
