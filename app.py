@@ -87,7 +87,6 @@ class Hello(MethodView):
     def post(self):
         try:
             global counter
-            print request.data
             gps = json.loads(request.data, cls=Decoder)
             results = Geocoder.reverse_geocode(gps['lat'], gps['lon'])
             print results
