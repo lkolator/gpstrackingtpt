@@ -84,7 +84,7 @@ class DeviceHandler(MethodView):
             config['pho'] = '+48692434624'
         return Response(json.dumps(config),  mimetype='application/json')
 
-    def post(self):
+    def post(self, device_id):
         try:
             print request.data
             gps = json.loads(request.data, cls=Decoder)
