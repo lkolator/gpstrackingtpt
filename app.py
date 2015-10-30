@@ -88,7 +88,10 @@ class DeviceHandler(MethodView):
         try:
             print request.data
             gps = json.loads(request.data, cls=Decoder)
-            results = Geocoder.reverse_geocode(gps['lat'], gps['lon'])
+            try:
+                results = Geocoder.reverse_geocode(gps['lat'], gps['lon'])
+            except:
+                results = "Not available"
             print results
             # return unicode(results[0])
             cfg['cfg'] = str(random.randint(0, 1))
