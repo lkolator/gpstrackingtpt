@@ -20,10 +20,8 @@ app = Flask(__name__)
 
 db = TrackerDatabase()
 
+# if __name__ == "__main__":
 #"\n".join([str(record) for record in db.dump()])
-
-if __name__ == "__main__":
-
 
 FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
 
