@@ -104,6 +104,7 @@ class DeviceHandler(MethodView):
             except:
                 results = "Not available"
             print results
+            db.insert(1000, 0, str(gps['lat']) + ' ' + str(gps['lon']))
             # return unicode(results[0])
             cfg['cfg'] = str(random.randint(0, 1))
             return Response(json.dumps(cfg),  mimetype='application/json')
