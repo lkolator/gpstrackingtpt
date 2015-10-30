@@ -51,7 +51,7 @@ class Decoder(json.JSONDecoder):
         if lat[2] == '.' and lon[2] == '.':
             lat, lon = float(lat), float(lon)
         else:
-            lat = int(lat[:2]) + float(lat[2:len(lat) - 1])/60
+            lat = int(lat[:3]) + float(lat[3:len(lat) - 1])/60
             lon = int(lon[:3]) + float(lon[3:len(lon) - 1])/60
         return lat, lon
 
