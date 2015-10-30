@@ -40,10 +40,6 @@ cfg = {'cfg': '1'}
 app = Flask(__name__)
 
 
-last_time = 0
-counter = 0
-
-
 def random_config():
     config['htr'] = str(random.randint(0, 1))
     config['str'] = str(random.randint(0, 1))
@@ -78,23 +74,27 @@ class Main(MethodView):
         # return render_template('index.html', devices=devices)
 
 
-class Hello(MethodView):
-    def get(self):
+class DeviceHandler(MethodView):
+    def get(self, device_id):
         # return "OK"
         random_config()
+        if device_id == '6292497':
+            config['pho'] = '+48509386813'
+        else:
+            config['pho'] = '+48692434624'
         return Response(json.dumps(config),  mimetype='application/json')
 
     def post(self):
         try:
-            global counter
+            print request.data
             gps = json.loads(request.data, cls=Decoder)
             results = Geocoder.reverse_geocode(gps['lat'], gps['lon'])
             print results
             # return unicode(results[0])
-            cfg['cfg'] = str(radnom.randint(0, 1))
+            cfg['cfg'] = str(random.randint(0, 1))
             return Response(json.dumps(cfg),  mimetype='application/json')
         except:
-            return "OK"
+            return "Failed"
 
 
 class HelloPost(MethodView):
@@ -103,7 +103,7 @@ class HelloPost(MethodView):
 
 
 app.add_url_rule('/', view_func=Main.as_view('main'))
-app.add_url_rule('/hello', view_func=Hello.as_view('hello'))
+app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
 app.add_url_rule('/hello/<string:device_id>', view_func=HelloPost.as_view('hellopost'))
 
 if __name__ == '__main__':
