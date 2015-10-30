@@ -87,7 +87,7 @@ class Main(MethodView):
 
 class DeviceHandler(MethodView):
     def get(self, device_id):
-        # return "OK"
+        print request.headers.get('User-Agent')
         random_config()
         if device_id == '6292497':
             config['pho'] = '+48509386813'
