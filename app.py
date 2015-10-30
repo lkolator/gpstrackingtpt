@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 db = TrackerDatabase()
 
-"\n".join([str(record) for record in db.dump()])
+#"\n".join([str(record) for record in db.dump()])
 
 if __name__ == "__main__":
 
