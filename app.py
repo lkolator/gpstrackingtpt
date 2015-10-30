@@ -41,9 +41,8 @@ app = Flask(__name__)
 
 
 def random_config():
-    config['htr'] = str(random.randint(0, 1))
     config['str'] = str(random.randint(0, 1))
-    config['tpr'] = str(random.randint(0, 3))
+    config['tpr'] = str(random.randint(0, 1))
 
 
 class Decoder(json.JSONDecoder):
@@ -51,9 +50,14 @@ class Decoder(json.JSONDecoder):
         if lat[2] == '.' and lon[2] == '.':
             lat, lon = float(lat), float(lon)
         else:
-            lat = int(lat[:3]) + float(lat[3:len(lat) - 1])/60
-            lon = int(lon[:3]) + float(lon[3:len(lon) - 1])/60
-        return lat, lon
+            lat_coord = int(lat[:3]) + float(lat[3:len(lat) - 1])/60
+            lon_coord = int(lon[:3]) + float(lon[3:len(lon) - 1])/60
+        if lat[-1] == 'S':
+            lat_coord = -lat_coord
+        if lon[-1] == 'W':
+            lon_coord = -lon_coord
+
+        return lat_coord, lon_coord
 
     def decode(self, obj):
         obj = obj.replace('\x27', '\x22')
