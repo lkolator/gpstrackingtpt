@@ -88,7 +88,9 @@ class Main(MethodView):
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-            return "\n".join([str(record) for record in db.dump(device_id)])
+            #return "\n".join([str(record) for record in db.dump(device_id)])
+            record = db.dump(device_id)
+            return render_template('maps.hmtl', lat=record[4], lon=record[5])
         random_config()
         if device_id == '6292497':
             config['pho'] = '+48509386813'
