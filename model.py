@@ -14,20 +14,25 @@ class TrackerDatabase(object):
                         addtime DATETIME, \
                         recordtime INTEGER, \
                         flags INTEGER, \
-                        position STRING \
-                        )')
+                        latitude REAL, \
+                        longitude REAL, \
+                        device INTEGER \
+                        );')
 
-    def insert(self, rectime, flags, pos):
+    def insert(self, device, rectime, flags, lat, lon):
         cur = self.conn.cursor()
         cur.execute('insert into ' + self.tname +
-                '(addtime, recordtime, flags, position) \
-                        values(DateTime(\'now\'), ' +
-                        str(rectime) + ', ' + str(flags) + ", \'" + pos + '\')')
+                    '(addtime, device, recordtime, flags, latitude, longitude) \
+                    values(DateTime(\'now\'), ' +
+                    str(device) + ', ' + str(rectime) + ', ' + str(flags) +
+                    ', ' + str(lat) + ', ' + str(lon) + ');')
         self.conn.commit()
 
-    def dump(self):
+    def dump(self, device, records=1):
         cur = self.conn.cursor()
-        return [row for row in cur.execute('select * from ' + self.tname)]
+        return [row for row in cur.execute('select * from ' + self.tname +
+                ' where device like ' + str(device) + ' order by id desc' +
+                ' limit ' + str(records) + ';')]
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"

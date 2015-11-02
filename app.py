@@ -48,7 +48,6 @@ app = Flask(__name__)
 
 
 def random_config():
-    config['str'] = str(random.randint(0, 1))
     config['tpr'] = str(random.randint(0, 1))
 
 
@@ -68,9 +67,9 @@ class Decoder(json.JSONDecoder):
 
     def decode(self, obj):
         obj = obj.replace('\x27', '\x22')
-        gps = json.JSONDecoder.decode(self, obj)
-        gps['lat'], gps['lon'] = self._convert_coord(gps['lat'], gps['lon'])
-        return gps
+        data = json.JSONDecoder.decode(self, obj)
+        data['lat'], data['lon'] = self._convert_coord(data['lat'], data['lon'])
+        return data
 
 
 class Decoder2(json.JSONDecoder):
@@ -87,7 +86,8 @@ class Main(MethodView):
 
 class DeviceHandler(MethodView):
     def get(self, device_id):
-        print request.headers.get('User-Agent')
+        if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
+            return "\n".join([str(record) for record in db.dump()])
         random_config()
         if device_id == '6292497':
             config['pho'] = '+48509386813'
@@ -98,13 +98,13 @@ class DeviceHandler(MethodView):
     def post(self, device_id):
         try:
             print request.data
-            gps = json.loads(request.data, cls=Decoder)
+            data = json.loads(request.data, cls=Decoder)
             try:
-                results = Geocoder.reverse_geocode(gps['lat'], gps['lon'])
+                results = Geocoder.reverse_geocode(data['lat'], data['lon'])
             except:
                 results = "Not available"
             print results
-            db.insert(1000, 0, str(gps['lat']) + ' ' + str(gps['lon']))
+            db.insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
             # return unicode(results[0])
             cfg['cfg'] = str(random.randint(0, 1))
             return Response(json.dumps(cfg),  mimetype='application/json')
