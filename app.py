@@ -80,14 +80,15 @@ class Decoder2(json.JSONDecoder):
 
 class Main(MethodView):
     def get(self):
-        return "\n".join([str(record) for record in db.dump()])
+        return 'OK'
+        #return "\n".join([str(record) for record in db.dump()])
         # return render_template('index.html', devices=devices)
 
 
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-            return "\n".join([str(record) for record in db.dump()])
+            return "\n".join([str(record) for record in db.dump(device_id)])
         random_config()
         if device_id == '6292497':
             config['pho'] = '+48509386813'
