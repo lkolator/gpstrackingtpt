@@ -18,16 +18,13 @@
   </head>
   <body>
     <div id="map"></div>
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg">
-    </script>
-
     <script>
+
 function initMap() {
   var myLatLng = {lat: {{lat}}, lng: {{lon}}};
 
   var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 4,
+    zoom: 13,
     center: myLatLng
   });
 
@@ -37,6 +34,9 @@ function initMap() {
     title: 'Hello World!'
   });
 }
+    </script>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg&signed_in=true&callback=initMap">
     </script>
   </body>
 </html>

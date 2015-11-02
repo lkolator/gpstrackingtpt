@@ -82,7 +82,7 @@ class Main(MethodView):
     def get(self):
         return 'OK'
         #return "\n".join([str(record) for record in db.dump()])
-        # return render_template('index.html', devices=devices)
+        #return render_template('maps.html', lat=51.1274365, lon=16.8997453333)
 
 
 class DeviceHandler(MethodView):
@@ -92,8 +92,8 @@ class DeviceHandler(MethodView):
             record = db.dump(device_id)[0]
             print record[4]
             print record[5]
-            #return render_template('maps.hmtl', lat=record[4], lon=record[5])
-            return render_template('maps2.hmtl')
+            return render_template('maps.hmtl', lat=record[4], lon=record[5])
+            #return render_template('maps2.hmtl')
         random_config()
         if device_id == '6292497':
             config['pho'] = '+48509386813'
