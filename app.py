@@ -5,13 +5,7 @@ from flask import Response, render_template, send_from_directory
 from flask.views import MethodView
 from pygeocoder import Geocoder
 import json
-import logging
-import geojson
-from geojson import LineString, Feature, FeatureCollection
 import os
-import time
-import glob
-import pickle
 import time
 import random
 from model import TrackerDatabase
@@ -19,11 +13,6 @@ from model import TrackerDatabase
 app = Flask(__name__)
 
 db = TrackerDatabase()
-
-# if __name__ == "__main__":
-#"\n".join([str(record) for record in db.dump()])
-
-FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
 
 # "{"srn":"00000000","lat":"00000.00000X","lon":"00000.00000X","utc":"000000.00","acc":"00000","flg":"0000"}";
 # htr - HTTP tracking; 0 - off, 1 - on
@@ -35,6 +24,7 @@ FILE_FORMAT = '%Y_%m_%d_%H_%M_%S'
 # terminated
 # prt - HTTP reporting port number
 # {"srn":"00000000","htr":"X","str":"X","tpr":""X","pho":"+000000000000","www":"0000000000000000000000000000000000000000","prt":"00000"}"
+
 config = {
         'htr': '1',
         'str': '1',
@@ -42,7 +32,7 @@ config = {
         'pho': '+48509386813'
         }
 
-cfg = {'cfg': '1'}
+cfg = {'cfg': '0'}
 
 app = Flask(__name__)
 
@@ -62,7 +52,6 @@ class Decoder(json.JSONDecoder):
             lat_coord = -lat_coord
         if lon[-1] == 'W':
             lon_coord = -lon_coord
-
         return lat_coord, lon_coord
 
     def decode(self, obj):
@@ -82,16 +71,13 @@ class Main(MethodView):
     def get(self):
         return 'OK'
         #return "\n".join([str(record) for record in db.dump()])
-        #return render_template('maps.html', lat=51.1274365, lon=16.8997453333)
 
 
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-            #return "\n".join([str(record) for record in db.dump(device_id)])
             record = db.dump(device_id)[0]
             return render_template('maps.html', lat=record[4], lon=record[5])
-        random_config()
         if device_id == '6292497':
             config['pho'] = '+48509386813'
         else:
@@ -100,7 +86,6 @@ class DeviceHandler(MethodView):
 
     def post(self, device_id):
         try:
-            print request.data
             data = json.loads(request.data, cls=Decoder)
             try:
                 results = Geocoder.reverse_geocode(data['lat'], data['lon'])
@@ -108,21 +93,13 @@ class DeviceHandler(MethodView):
                 results = "Not available"
             print results
             db.insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
-            # return unicode(results[0])
-            cfg['cfg'] = str(random.randint(0, 1))
             return Response(json.dumps(cfg),  mimetype='application/json')
         except:
             return "Failed"
 
 
-class HelloPost(MethodView):
-    def post(self):
-        pass
-
-
 app.add_url_rule('/', view_func=Main.as_view('main'))
 app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
-app.add_url_rule('/hello/<string:device_id>', view_func=HelloPost.as_view('hellopost'))
 
 if __name__ == '__main__':
     # app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
