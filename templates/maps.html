@@ -12,7 +12,15 @@
         padding: 0;
       }
       #map {
+        float: left;
         height: 100%;
+        width: 80%;
+      }
+      #info {
+        float: right;
+        height: 100%;
+        width: 20%;
+        text-align: left;
       }
     </style>
   </head>
@@ -38,5 +46,9 @@ function initMap() {
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg&signed_in=true&callback=initMap">
     </script>
+    <div id="info">
+    <p style="margin-left: 50px">DEVICE: {{dev}}</p>
+    <p style="margin-left: 50px">FLAGS: {{flg}}</p>
+    </div>
   </body>
 </html>
