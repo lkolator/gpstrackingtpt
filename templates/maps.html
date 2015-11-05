@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
@@ -75,6 +76,17 @@ function initMap() {
           <input type="submit" value="Save & Send" onclick="">
       </div>
     </form>
+    <script>
+   $('form').submit(function(){
+
+      $.post($(this).attr('action'), JSON.stringify($(this).serializeArray()), function(response){
+      //$.post($(this).attr('action'), $(this).serialize(), function(response){
+            // do something here on success
+            windows.alert('sss')
+      },'json');
+      return false;
+    });
+    </script>
     <script>
     function handleAct(cb) {
         var inputName;
