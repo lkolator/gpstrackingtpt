@@ -22,6 +22,9 @@
         width: 20%;
         text-align: left;
       }
+      p {
+          margin-left: 50px
+      }
     </style>
   </head>
   <body>
@@ -47,8 +50,61 @@ function initMap() {
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg&signed_in=true&callback=initMap">
     </script>
     <div id="info">
-    <p style="margin-left: 50px">DEVICE: {{dev}}</p>
-    <p style="margin-left: 50px">FLAGS: {{flg}}</p>
+    <p>DEVICE: {{dev}}</p>
+    <p>FLAGS: {{flg}}</p>
+    <form>
+      <fieldset>
+        <legend><input type="checkbox" name="htrAct" onclick="handleAct(this)"></legend>
+        <input type="checkbox" id="htrCheckbox" name="htr" disabled>HTTP tracking
+      </fieldset>
+      <fieldset>
+        <legend><input type="checkbox" name="strAct" onclick="handleAct(this)"></legend>
+        <input type="checkbox" id="strCheckbox" name="str" disabled>SMS tracking
+      </fieldset>
+      <fieldset id="tprRadio" disabled>
+        <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)">tracking period</legend>
+        <input type="radio" name="tpr" value="0">15 s<br>
+        <input type="radio" name="tpr" value="1">1 min<br>
+        <input type="radio" name="tpr" value="2">5 min<br>
+        <input type="radio" name="tpr" value="3">30 min<br>
+      </fieldset>
+      <fieldset>
+        <legend><input type="checkbox" name="phoAct" onclick="handleAct(this)"></legend>
+        SMS reporting phone number:<br>
+        <input type="text" id="phoText" name="pho" disabled>
+      </fieldset>
+      <br>
+      <div style="text-align:center">
+          <input type="submit" value="Save">
+      </div>
+    </form>
+    <script>
+    function handleAct(cb) {
+        var inputName;
+
+        switch (cb.name) {
+            case "htrAct":
+                inputName = "htrCheckbox";
+                break;
+            case "strAct":
+                inputName = "strCheckbox";
+                break;
+            case "tprAct":
+                inputName = "tprRadio";
+                break;
+            case "phoAct":
+                inputName = "phoText";
+                break;
+            default:
+        }
+
+        if (cb.checked) {
+            document.getElementById(inputName).disabled = false;
+        } else {
+            document.getElementById(inputName).disabled = true;
+        }
+    }
+    </script>
     </div>
   </body>
 </html>
