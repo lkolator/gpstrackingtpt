@@ -90,6 +90,7 @@ class DeviceHandler(MethodView):
 
     def post(self, device_id):
         try:
+            print request.data
             data = json.loads(request.data, cls=Decoder)
             try:
                 results = Geocoder.reverse_geocode(data['lat'], data['lon'])
