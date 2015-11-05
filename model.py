@@ -34,5 +34,9 @@ class TrackerDatabase(object):
                 ' where device like ' + str(device) + ' order by id desc' +
                 ' limit ' + str(records) + ';')]
 
+    def dump_all(self):
+        cur = self.conn.cursor()
+        return [row for row in cur.execute('select * from ' + self.tname + ';')]
+
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
