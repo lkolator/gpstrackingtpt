@@ -57,6 +57,7 @@ function initMap() {
       <fieldset>
         <legend><input type="checkbox" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
         <input type="checkbox" id="htrCheckbox" name="htr" checked disabled>enabled
+        <input type="hidden" name="htr" disabled>
       </fieldset>
       <fieldset id="smsForm" disabled>
         <legend><input type="checkbox" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
@@ -80,7 +81,7 @@ function initMap() {
    $('form').submit(function(){
       $.post($(this).attr('action'), $(this).serialize(), function(response){
             // do something here on success
-            windows.alert('sss')
+            window.alert('sss')
       },'json');
       return false;
     });
