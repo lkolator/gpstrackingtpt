@@ -38,5 +38,9 @@ class TrackerDatabase(object):
         cur = self.conn.cursor()
         return [row for row in cur.execute('select * from ' + self.tname + ';')]
 
+    def drop(self):
+        cur = self.conn.cursor()
+        cur.execute('drop table if exists ' + self.tname + ';')
+
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
