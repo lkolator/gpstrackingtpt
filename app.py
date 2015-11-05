@@ -69,8 +69,8 @@ class Decoder2(json.JSONDecoder):
 
 class Main(MethodView):
     def get(self):
-        return 'OK'
-        #return "\n".join([str(record) for record in db.dump()])
+        #return 'OK'
+        return "\n".join([str(record) for record in db.dump_all()])
 
 
 class DeviceHandler(MethodView):
