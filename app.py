@@ -78,7 +78,6 @@ class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
             record = db.dump(device_id)
-            print record
             if not record:
                 return "Not available"
             return render_template('maps.html', dev=device_id, lat=record[0][4],
@@ -93,7 +92,7 @@ class DeviceHandler(MethodView):
         try:
             print request.data
             if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-                print "AAAA"
+                print request.form
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
             try:
