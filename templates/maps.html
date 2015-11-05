@@ -57,21 +57,18 @@ function initMap() {
         <legend><input type="checkbox" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
         <input type="checkbox" id="htrCheckbox" name="htr" checked disabled>enabled
       </fieldset>
-      <fieldset>
+      <fieldset id="smsForm" disabled>
         <legend><input type="checkbox" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
-        <input type="checkbox" id="strCheckbox" name="str" checked disabled>enabled
+        <input type="checkbox" name="str" checked>enabled<br>
+        phone number:<br>
+        <input type="text" name="pho">
       </fieldset>
       <fieldset id="tprRadio" disabled>
         <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)">Tracking period</legend>
         <input type="radio" name="tpr" value="0">15 s<br>
-        <input type="radio" name="tpr" value="1">1 min<br>
+        <input type="radio" name="tpr" value="1" checked>1 min<br>
         <input type="radio" name="tpr" value="2">5 min<br>
         <input type="radio" name="tpr" value="3">30 min<br>
-      </fieldset>
-      <fieldset>
-        <legend><input type="checkbox" name="phoAct" onclick="handleAct(this)">SMS reporting</legend>
-        phone number:<br>
-        <input type="text" id="phoText" name="pho" disabled>
       </fieldset>
       <br>
       <div style="text-align:center">
@@ -87,13 +84,10 @@ function initMap() {
                 inputName = "htrCheckbox";
                 break;
             case "strAct":
-                inputName = "strCheckbox";
+                inputName = "smsForm";
                 break;
             case "tprAct":
                 inputName = "tprRadio";
-                break;
-            case "phoAct":
-                inputName = "phoText";
                 break;
             default:
         }
