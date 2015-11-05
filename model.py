@@ -13,7 +13,7 @@ class TrackerDatabase(object):
                 '(id INTEGER PRIMARY KEY AUTOINCREMENT, \
                         addtime DATETIME, \
                         recordtime INTEGER, \
-                        flags INTEGER, \
+                        flags TEXT, \
                         latitude REAL, \
                         longitude REAL, \
                         device INTEGER \
