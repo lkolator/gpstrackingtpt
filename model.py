@@ -23,16 +23,14 @@ class TrackerDatabase(object):
         cur = self.conn.cursor()
         cur.execute('insert into ' + self.tname +
                     '(addtime, device, recordtime, flags, latitude, longitude) \
-                    values(DateTime(\'now\'), ' +
-                    str(device) + ', ' + str(rectime) + ', ' + str(flags) +
-                    ', ' + str(lat) + ', ' + str(lon) + ');')
+                    values(\'now\', ?, ?, ?, ?, ?);', device, rectime, flags,
+                    lat, lon)
         self.conn.commit()
 
     def dump(self, device, records=1):
         cur = self.conn.cursor()
         return [row for row in cur.execute('select * from ' + self.tname +
-                ' where device like ' + str(device) + ' order by id desc' +
-                ' limit ' + str(records) + ';')]
+                ' where device like ? order by id desc limit ? ;', device, records)]
 
     def dump_all(self):
         cur = self.conn.cursor()
