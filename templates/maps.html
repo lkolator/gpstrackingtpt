@@ -55,17 +55,18 @@ function initMap() {
     <p>FLAGS: {{flg}}</p>
     <form method="post">
       <fieldset>
-        <legend><input type="checkbox" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
+        <legend><input type="checkbox" class="activator" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
         <input type="checkbox" id="htrCheckbox" name="htr" checked disabled>enabled
+        <input type="hidden" name="htr" disabled>
       </fieldset>
       <fieldset id="smsForm" disabled>
-        <legend><input type="checkbox" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
+        <legend><input type="checkbox" class="activator" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
         <input type="checkbox" name="str" checked>enabled<br>
         phone number:<br>
         <input type="text" name="pho">
       </fieldset>
       <fieldset id="tprRadio" disabled>
-        <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)">Tracking period</legend>
+        <legend><input type="checkbox" class="activator" name="tprAct" onclick="handleAct(this)">Tracking period</legend>
         <input type="radio" name="tpr" value="0">15 s<br>
         <input type="radio" name="tpr" value="1" checked>1 min<br>
         <input type="radio" name="tpr" value="2">5 min<br>
@@ -78,7 +79,6 @@ function initMap() {
     </form>
     <script>
    $('form').submit(function(){
-
       $.post($(this).attr('action'), JSON.stringify($(this).serializeArray()), function(response){
       //$.post($(this).attr('action'), $(this).serialize(), function(response){
             // do something here on success
