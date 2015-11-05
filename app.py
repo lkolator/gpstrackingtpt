@@ -92,6 +92,9 @@ class DeviceHandler(MethodView):
     def post(self, device_id):
         try:
             print request.data
+            if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
+                print "AAAA"
+                return "OK"
             data = json.loads(request.data, cls=Decoder)
             try:
                 results = Geocoder.reverse_geocode(data['lat'], data['lon'])

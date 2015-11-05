@@ -52,30 +52,30 @@ function initMap() {
     <div id="info">
     <p>DEVICE: {{dev}}</p>
     <p>FLAGS: {{flg}}</p>
-    <form>
+    <form method="post">
       <fieldset>
-        <legend><input type="checkbox" name="htrAct" onclick="handleAct(this)"></legend>
-        <input type="checkbox" id="htrCheckbox" name="htr" disabled>HTTP tracking
+        <legend><input type="checkbox" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
+        <input type="checkbox" id="htrCheckbox" name="htr" checked disabled>enabled
       </fieldset>
       <fieldset>
-        <legend><input type="checkbox" name="strAct" onclick="handleAct(this)"></legend>
-        <input type="checkbox" id="strCheckbox" name="str" disabled>SMS tracking
+        <legend><input type="checkbox" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
+        <input type="checkbox" id="strCheckbox" name="str" checked disabled>enabled
       </fieldset>
       <fieldset id="tprRadio" disabled>
-        <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)">tracking period</legend>
+        <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)">Tracking period</legend>
         <input type="radio" name="tpr" value="0">15 s<br>
         <input type="radio" name="tpr" value="1">1 min<br>
         <input type="radio" name="tpr" value="2">5 min<br>
         <input type="radio" name="tpr" value="3">30 min<br>
       </fieldset>
       <fieldset>
-        <legend><input type="checkbox" name="phoAct" onclick="handleAct(this)"></legend>
-        SMS reporting phone number:<br>
+        <legend><input type="checkbox" name="phoAct" onclick="handleAct(this)">SMS reporting</legend>
+        phone number:<br>
         <input type="text" id="phoText" name="pho" disabled>
       </fieldset>
       <br>
       <div style="text-align:center">
-          <input type="submit" value="Save">
+          <input type="submit" value="Save & Send" onclick="">
       </div>
     </form>
     <script>
