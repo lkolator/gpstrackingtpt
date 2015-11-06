@@ -71,7 +71,11 @@ class TrackerDatabase(object):
     def is_config(self, device):
         cur = self.conn.cursor()
         cur.execute('select new from ' + self.cname + ' where device=?;', (device,))
-        return cur.fetchone()[0]
+        try:
+            retval = cur.fetchone()[0]
+        except:
+            retval = '0'
+        return retval
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
