@@ -9,6 +9,8 @@ import os
 import time
 import random
 from model import TrackerDatabase
+from celery import task
+from celery.contrib import rdb
 
 app = Flask(__name__)
 
@@ -88,8 +90,10 @@ class DeviceHandler(MethodView):
             config['pho'] = '+48692434624'
         return Response(json.dumps(config),  mimetype='application/json')
 
+    @task()
     def post(self, device_id):
         try:
+            rdb.set_trace()
             print request.data
             if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
                 print request.form
