@@ -9,13 +9,12 @@ import os
 import time
 import random
 from model import TrackerDatabase
-from celery import task
-from celery.contrib import rdb
 
 app = Flask(__name__)
 
 db = TrackerDatabase()
 
+CFG_PARAM = ('htr', 'str', 'tpr', 'pho')
 # "{"srn":"00000000","lat":"00000.00000X","lon":"00000.00000X","utc":"000000.00","acc":"00000","flg":"0000"}";
 # htr - HTTP tracking; 0 - off, 1 - on
 # str - SMS tracking; 0 - off, 1 - on
@@ -27,20 +26,15 @@ db = TrackerDatabase()
 # prt - HTTP reporting port number
 # {"srn":"00000000","htr":"X","str":"X","tpr":""X","pho":"+000000000000","www":"0000000000000000000000000000000000000000","prt":"00000"}"
 
-config = {
-        'htr': '1',
-        'str': '1',
-        'tpr': '1',
-        'pho': '+48509386813'
-        }
-
-cfg = {'cfg': '0'}
-
 app = Flask(__name__)
 
 
-def random_config():
-    config['tpr'] = str(random.randint(0, 1))
+def prepare_config(record):
+    config = {}
+    for name, val in zip(CFG_PARAM, record):
+        if val:
+            config[name] = val
+    return config
 
 
 class Decoder(json.JSONDecoder):
@@ -84,19 +78,19 @@ class DeviceHandler(MethodView):
                 return "Not available"
             return render_template('maps.html', dev=device_id, lat=record[0][4],
                                     lon=record[0][5], flg=record[0][3])
-        if device_id == '6292497':
-            config['pho'] = '+48509386813'
-        else:
-            config['pho'] = '+48692434624'
+        config = prepare_config(db.dump_config(device_id))
         return Response(json.dumps(config),  mimetype='application/json')
 
-    @task()
     def post(self, device_id):
         try:
-            rdb.set_trace()
-            print request.data
             if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-                print request.form
+                form = request.form.to_dict()
+                print form
+                if 'htrAct' in form.keys() and 'htr' not in form.keys():
+                    form.update({'htr':'0'})
+                if 'strAct' in form.keys() and 'str' not in form.keys():
+                    form.update({'str':'0'})
+                db.update(device_id, form['htr'], form['str'], form['tpr'], form['pho'])
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
             try:
@@ -105,6 +99,7 @@ class DeviceHandler(MethodView):
                 results = "Not available"
             print results
             db.insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
+            cfg = dict.fromkeys(['cfg'], db.is_config(device_id))
             return Response(json.dumps(cfg),  mimetype='application/json')
         except:
             return "Failed"

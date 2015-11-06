@@ -26,7 +26,7 @@ class TrackerDatabase(object):
                         smstracking TEXT, \
                         period TEXT, \
                         phone TEXT, \
-                        new INTEGER, \
+                        new TEXT, \
                         device INTEGER PRIMARY KEY \
                         );')
 
@@ -54,7 +54,7 @@ class TrackerDatabase(object):
         cur = self.conn.cursor()
         cur.execute('insert or replace into ' + self.cname +
                     '(addtime, device, httptracking, smstracking, period, phone, new) \
-                    values(DateTime(\'now\'), ?, ?, ?, ?, ?, 1);', (device, htr, str, tpr, pho))
+                    values(DateTime(\'now\'), ?, ?, ?, ?, ?, "1");', (device, htr, str, tpr, pho))
         self.conn.commit()
 
     def dump_config(self, device):
@@ -64,14 +64,14 @@ class TrackerDatabase(object):
         cfg = cur.fetchone()
         cur.execute('insert or replace into ' + self.cname +
                     '(addtime, device, httptracking, smstracking, period, phone, new) \
-                    values(DateTime(\'now\'), ?, "", "", "", "", 0);', (device,))
+                    values(DateTime(\'now\'), ?, "", "", "", "", "0");', (device,))
         self.conn.commit()
         return cfg
 
     def is_config(self, device):
         cur = self.conn.cursor()
         cur.execute('select new from ' + self.cname + ' where device=?;', (device,))
-        return bool(cur.fetchone()[0])
+        return cur.fetchone()[0]
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"

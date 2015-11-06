@@ -56,12 +56,11 @@ function initMap() {
     <form method="post">
       <fieldset>
         <legend><input type="checkbox" class="activator" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
-        <input type="checkbox" id="htrCheckbox" name="htr" checked disabled>enabled
-        <input type="hidden" name="htr" disabled>
+        <input type="checkbox" id="htrCheckbox" name="htr" value="1" checked disabled>enabled
       </fieldset>
       <fieldset id="smsForm" disabled>
         <legend><input type="checkbox" class="activator" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
-        <input type="checkbox" name="str" checked>enabled<br>
+        <input type="checkbox" name="str" value="1" checked>enabled<br>
         phone number:<br>
         <input type="text" name="pho">
       </fieldset>
