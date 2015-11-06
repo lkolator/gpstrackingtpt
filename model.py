@@ -21,20 +21,20 @@ class TrackerDatabase(object):
                         device INTEGER \
                         );')
         cur.execute('create table if not exists ' + self.cname +
-                '(id INTEGER AUTOINCREMENT, \
-                        addtime DATETIME, \
+                   '(   addtime DATETIME, \
                         httptracking TEXT, \
                         smstracking TEXT, \
                         period TEXT, \
                         phone TEXT, \
-                        device INTEGER PRIMARY KEY\
+                        new INTEGER, \
+                        device INTEGER PRIMARY KEY \
                         );')
 
     def insert(self, device, rectime, flags, lat, lon):
         cur = self.conn.cursor()
         cur.execute('insert into ' + self.tname +
                     '(addtime, device, recordtime, flags, latitude, longitude) \
-                    values(\'now\', ?, ?, ?, ?, ?);', (device, rectime, flags, lat, lon))
+                    values(DateTime(\'now\'), ?, ?, ?, ?, ?);', (device, rectime, flags, lat, lon))
         self.conn.commit()
 
     def dump(self, device, records=1):
@@ -53,9 +53,19 @@ class TrackerDatabase(object):
     def update(self, device, htr, str, tpr, pho):
         cur = self.conn.cursor()
         cur.execute('insert or replace into ' + self.cname +
-                    '(addtime, device, httptracking, smstracking, period, phone) \
-                    values(\'now\', ?, ?, ?, ?, ?);', (device, htr, str, tpr, pho))
+                    '(addtime, device, httptracking, smstracking, period, phone, new) \
+                    values(DateTime(\'now\'), ?, ?, ?, ?, ?, 1);', (device, htr, str, tpr, pho))
         self.conn.commit()
+
+    def dump_config(self, device):
+        cur = self.conn.cursor()
+        cur.execute('select * from ' + self.cname + ' where device=?;', (device,))
+        cfg = cur.fetchone()
+        cur.execute('insert or replace into ' + self.cname +
+                    '(addtime, device, httptracking, smstracking, period, phone, new) \
+                    values(DateTime(\'now\'), ?, "", "", "", "", 0);', (device,))
+        self.conn.commit()
+        return cfg
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
