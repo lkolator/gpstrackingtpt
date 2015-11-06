@@ -59,13 +59,19 @@ class TrackerDatabase(object):
 
     def dump_config(self, device):
         cur = self.conn.cursor()
-        cur.execute('select * from ' + self.cname + ' where device=?;', (device,))
+        cur.execute('select httptracking, smstracking, period, phone from ' +
+                    self.cname + ' where device=?;', (device,))
         cfg = cur.fetchone()
         cur.execute('insert or replace into ' + self.cname +
                     '(addtime, device, httptracking, smstracking, period, phone, new) \
                     values(DateTime(\'now\'), ?, "", "", "", "", 0);', (device,))
         self.conn.commit()
         return cfg
+
+    def is_config(self, device):
+        cur = self.conn.cursor()
+        cur.execute('select new from ' + self.cname + ' where device=?;', (device,))
+        return bool(cur.fetchone()[0])
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
