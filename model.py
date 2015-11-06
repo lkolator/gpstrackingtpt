@@ -2,9 +2,11 @@ import sqlite3
 
 DBNAME="tracker.db"
 TNAME="trackdata"
+CNAME="configdata"
 
 class TrackerDatabase(object):
-    def __init__(self, dbname = DBNAME, tname = TNAME):
+    def __init__(self, dbname = DBNAME, tname = TNAME, cname = CNAME):
+        self.cname = cname
         self.tname = tname
         self.dbname = dbname
         self.conn = sqlite3.connect(self.dbname)
@@ -17,6 +19,15 @@ class TrackerDatabase(object):
                         latitude REAL, \
                         longitude REAL, \
                         device INTEGER \
+                        );')
+        cur.execute('create table if not exists ' + self.cname +
+                '(id INTEGER AUTOINCREMENT, \
+                        addtime DATETIME, \
+                        httptracking TEXT, \
+                        smstracking TEXT, \
+                        period TEXT, \
+                        phone TEXT, \
+                        device INTEGER PRIMARY KEY\
                         );')
 
     def insert(self, device, rectime, flags, lat, lon):
@@ -38,6 +49,13 @@ class TrackerDatabase(object):
     def drop(self):
         cur = self.conn.cursor()
         cur.execute('drop table if exists ' + self.tname + ';')
+
+    def update(self, device, htr, str, tpr, pho):
+        cur = self.conn.cursor()
+        cur.execute('insert or replace into ' + self.cname +
+                    '(addtime, device, httptracking, smstracking, period, phone) \
+                    values(\'now\', ?, ?, ?, ?, ?);', (device, htr, str, tpr, pho))
+        self.conn.commit()
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
