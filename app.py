@@ -100,6 +100,7 @@ class DeviceHandler(MethodView):
             print results
             db.insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
             cfg = dict.fromkeys(['cfg'], db.is_config(device_id))
+            print cfg
             return Response(json.dumps(cfg),  mimetype='application/json')
         except:
             return "Failed"
