@@ -73,7 +73,6 @@ class TrackerDatabase(object):
         cur.execute('select new from ' + self.cname + ' where device=?;', (device,))
         try:
             retval = cur.fetchone()[0]
-            print "retval " + retval
         except:
             retval = '0'
         return retval
