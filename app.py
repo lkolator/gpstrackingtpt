@@ -37,6 +37,19 @@ def prepare_config(record):
     return config
 
 
+def prepare_form(config):
+    record = dict.fromkeys(CFG_PARAM)
+    keys = config.keys()
+    if 'htrAct' in keys and 'htr' not in keys:
+        config.update({'htr':'0'})
+    if 'strAct' in keys and 'str' not in keys:
+        config.update({'str':'0'})
+    for key in keys:
+        if record.has_key(key):
+            record[key] = config[key]
+    return record
+
+
 class Decoder(json.JSONDecoder):
     def _convert_coord(self, lat, lon):
         if lat[2] == '.' and lon[2] == '.':
@@ -84,13 +97,8 @@ class DeviceHandler(MethodView):
     def post(self, device_id):
         try:
             if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-                form = request.form.to_dict()
-                print form
-                if 'htrAct' in form.keys() and 'htr' not in form.keys():
-                    form.update({'htr':'0'})
-                if 'strAct' in form.keys() and 'str' not in form.keys():
-                    form.update({'str':'0'})
-                db.update(device_id, form['htr'], form['str'], form['tpr'], form['pho'])
+                rec = prepare_form(request.form.to_dict())
+                db.update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'])
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
             try:
