@@ -39,12 +39,11 @@ def prepare_config(record):
 
 def prepare_form(config):
     record = dict.fromkeys(CFG_PARAM)
-    keys = config.keys()
-    if 'htrAct' in keys and 'htr' not in keys:
+    if 'htrAct' in config.keys() and 'htr' not in config.keys():
         config.update({'htr':'0'})
-    if 'strAct' in keys and 'str' not in keys:
+    if 'strAct' in config.keys() and 'str' not in config.keys():
         config.update({'str':'0'})
-    for key in keys:
+    for key in config.keys():
         if record.has_key(key):
             record[key] = config[key]
     return record
@@ -108,7 +107,6 @@ class DeviceHandler(MethodView):
             print results
             db.insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
             cfg = dict.fromkeys(['cfg'], db.is_config(device_id))
-            print cfg
             return Response(json.dumps(cfg),  mimetype='application/json')
         except:
             return "Failed"
