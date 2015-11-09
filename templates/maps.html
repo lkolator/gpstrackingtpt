@@ -79,9 +79,15 @@ function initMap() {
     <script>
     $('form').submit(function() {
         var form = $(this).serialize();
+        var phone = document.forms["0"]["pho"].value;
 
         if (form == '') {
             return false;
+        }
+        if (phone != '') {
+            if (!phoneValidator(phone)) {
+                return false
+            }
         }
         $.post($(this).attr('action'), $(this).serialize(), function(response){
             alert('confguration saved')
@@ -110,6 +116,18 @@ function initMap() {
             document.getElementById(inputName).disabled = false;
         } else {
             document.getElementById(inputName).disabled = true;
+        }
+    }
+    </script>
+    <script>
+    function phoneValidator(phone) {
+        var phoneRegex = /^\+([0-9]{10,11})$/;
+
+        if (phone.match(phoneRegex)) {
+            return true;
+        } else {
+            alert("Not valid phone number!");
+            return false;
         }
     }
     </script>
