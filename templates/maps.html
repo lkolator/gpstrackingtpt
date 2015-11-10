@@ -2,8 +2,11 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <!---<meta name="viewport" content="initial-scale=1.0, user-scalable=no">-->
     <meta charset="utf-8">
     <title>GPS Tracking OPT</title>
     <style>
@@ -26,6 +29,30 @@
       p {
           margin-left: 50px
       }
+      td, th {
+          text-align: center;
+      }
+      .borderless tbody tr td, .borderless tbody tr th, .borderless thead tr th {
+          border: none;
+      }
+      fieldset {
+          border: 1px solid #DDD;
+          padding: 0 1.4em 1em 1.4em;
+          margin: 0 0 1em 0;
+      }
+      legend {
+          width: auto;
+          font-size: 1.2em;
+          font-weight: bold;
+          border-bottom: 0px;
+          margin-bottom: 0.5em;
+      }
+      .glyphicon.glyphicon-ok{
+          color: green;
+      }
+      .glyphicon.glyphicon-remove{
+          color: red;
+      }
     </style>
   </head>
   <body>
@@ -43,7 +70,7 @@ function initMap() {
   var marker = new google.maps.Marker({
     position: myLatLng,
     map: map,
-    title: 'Hello World!'
+    title: 'Position'
   });
 }
     </script>
@@ -51,31 +78,69 @@ function initMap() {
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg&signed_in=true&callback=initMap">
     </script>
     <div id="info">
-    <p>DEVICE: {{dev}}</p>
-    <p>FLAGS: {{flg}}</p>
-    <form method="post">
+    <div class="container-fluid">
+      <h4>Flags:</h4>
+      <table class="table borderless">
+        <thead>
+          <tr>
+            <th class="col-md-1"></th>
+            <th class="col-md-1">Actual</th>
+            <th class="col-md-1">Historical</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>POWER</td>
+            <td><span class="glyphicon glyphicon-ok"></span></td>
+            <td><span class="glyphicon glyphicon-ok"></span></td>
+          </tr>
+          <tr>
+            <td>CASING</td>
+            <td><span class="glyphicon glyphicon-ok"></span></td>
+            <td><span class="glyphicon glyphicon-remove"></span></td>
+          </tr>
+          <tr>
+            <td>STRAP</td>
+            <td><span class="glyphicon glyphicon-remove"></span></td>
+            <td><span class="glyphicon glyphicon-ok"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    <hr>
+    <form role="form" method="post">
       <fieldset>
-        <legend><input type="checkbox" class="activator" name="htrAct" onclick="handleAct(this)">HTTP tracking</legend>
-        <input type="checkbox" id="htrCheckbox" name="htr" value="1" checked disabled>enabled
+        <legend><input type="checkbox" class="activator" name="htrAct" onclick="handleAct(this)"> HTTP tracking</legend>
+        <div id="htrDiv">
+        <div class="checkbox" style="margin: 0"><label><input type="checkbox" id="htrCheckbox" name="htr" value="1" checked disabled>Enabled</label></div>
+        </div>
       </fieldset>
-      <fieldset id="smsForm" disabled>
-        <legend><input type="checkbox" class="activator" name="strAct" onclick="handleAct(this)">SMS tracking</legend>
-        <input type="checkbox" name="str" value="1" checked>enabled<br>
-        phone number:<br>
-        <input type="text" name="pho">
+      <fieldset id="smsForm">
+        <legend><input type="checkbox" class="activator" name="strAct" onclick="handleAct(this)"> SMS tracking</legend>
+        <div id="strDiv" disabled>
+        <div class="checkbox" style="margin-top: 0"><label><input type="checkbox" name="str" value="1" disabled checked>Enabled</label></div>
+        <div class="form-group">
+            <label for="phoID">Phone number:</label>
+            <input type="text" name="pho" class="form-control" id="phoID" disabled>
+        </div>
+        </div>
       </fieldset>
-      <fieldset id="tprRadio" disabled>
-        <legend><input type="checkbox" class="activator" name="tprAct" onclick="handleAct(this)">Tracking period</legend>
-        <input type="radio" name="tpr" value="0">15 s<br>
-        <input type="radio" name="tpr" value="1" checked>1 min<br>
-        <input type="radio" name="tpr" value="2">5 min<br>
-        <input type="radio" name="tpr" value="3">30 min<br>
+      <fieldset id="tprRadio">
+        <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)"> Tracking period</legend>
+        <div id="tprDiv" disabled="disabled">
+        <div class="radio"><label><input type="radio" name="tpr" value="0" disabled>15 s</label></div>
+        <div class="radio"><label><input type="radio" name="tpr" value="1" disabled checked>1 min</label></div>
+        <div class="radio"><label><input type="radio" name="tpr" value="2" disabled>5 min</label></div>
+        <div class="radio"><label><input type="radio" name="tpr" value="3" disabled>30 min</label></div>
+        </div>
       </fieldset>
       <br>
       <div style="text-align:center">
-          <input type="submit" value="Save & Send" onclick="">
+          <button type="submit" class="btn btn-default">Save & Send</button>
       </div>
     </form>
+    <br>
+    <div id = "alertPlace"></div>
+    </div>
     <script>
     $('form').submit(function() {
         var form = $(this).serialize();
@@ -86,11 +151,12 @@ function initMap() {
         }
         if (phone != '') {
             if (!phoneValidator(phone)) {
-                return false
+                showAlert("Invalid phone number!", "alert-danger");
+                return false;
             }
         }
         $.post($(this).attr('action'), $(this).serialize(), function(response){
-            alert('confguration saved')
+            showAlert("Configuration saved", "alert-success");
       },'text');
       return false;
     });
@@ -101,21 +167,21 @@ function initMap() {
 
         switch (cb.name) {
             case "htrAct":
-                inputName = "htrCheckbox";
+                inputName = "#htrDiv";
                 break;
             case "strAct":
-                inputName = "smsForm";
+                inputName = "#strDiv";
                 break;
             case "tprAct":
-                inputName = "tprRadio";
+                inputName = "#tprDiv";
                 break;
             default:
         }
 
         if (cb.checked) {
-            document.getElementById(inputName).disabled = false;
+            $(inputName + " :input").attr("disabled", false);
         } else {
-            document.getElementById(inputName).disabled = true;
+            $(inputName + " :input").attr("disabled", true);
         }
     }
     </script>
@@ -126,10 +192,18 @@ function initMap() {
         if (phone.match(phoneRegex)) {
             return true;
         } else {
-            alert("Not valid phone number!");
             return false;
         }
     }
+    </script>
+    <script>
+    function showAlert(message, type) {
+        $('#alertPlace').append('<div id="alertdiv" class="alert ' +  type + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+        setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+            $("#alertdiv").remove();
+        }, 5000);
+    }
+//});
     </script>
     </div>
   </body>
