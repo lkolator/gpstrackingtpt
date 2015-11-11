@@ -45,18 +45,23 @@
         <tbody>
           <tr>
             <td>POWER</td>
-            <td><span class="glyphicon glyphicon-ok"></span></td>
-            <td><span class="glyphicon glyphicon-ok"></span></td>
+            <td></td>
+            <td><span class="glyphicon glyphicon-{{'remove' if flags['power'] else 'ok'}}"></span></td>
           </tr>
           <tr>
             <td>CASING</td>
-            <td><span class="glyphicon glyphicon-ok"></span></td>
-            <td><span class="glyphicon glyphicon-remove"></span></td>
+            <td><span class="glyphicon glyphicon-{{'remove' if flags['casing'] else 'ok'}}"></span></td>
+            <td><span class="glyphicon glyphicon-{{'remove' if flags['casing_h'] else 'ok'}}"></span></td>
           </tr>
           <tr>
             <td>STRAP</td>
-            <td><span class="glyphicon glyphicon-remove"></span></td>
-            <td><span class="glyphicon glyphicon-ok"></span></td>
+            <td><span class="glyphicon glyphicon-{{'remove' if flags['strap'] else 'ok'}}"></span></td>
+            <td><span class="glyphicon glyphicon-{{'remove' if flags['strap_h'] else 'ok'}}"></span></td>
+          </tr>
+          <tr>
+            <td>HARDWARE</td>
+            <td></td>
+            <td><span class="glyphicon glyphicon-{{'remove' if flags['hardware'] else 'ok'}}"></span></td>
           </tr>
         </tbody>
       </table>

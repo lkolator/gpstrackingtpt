@@ -15,6 +15,7 @@ app = Flask(__name__)
 db = TrackerDatabase()
 
 CFG_PARAM = ('htr', 'str', 'tpr', 'pho')
+FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
 # "{"srn":"00000000","lat":"00000.00000X","lon":"00000.00000X","utc":"000000.00","acc":"00000","flg":"0000"}";
 # htr - HTTP tracking; 0 - off, 1 - on
 # str - SMS tracking; 0 - off, 1 - on
@@ -47,6 +48,14 @@ def prepare_form(config):
         if record.has_key(key):
             record[key] = config[key]
     return record
+
+
+def parse_flags(flags):
+    flgs = {}
+    masks = (0x8000, 0x4000, 0x2000, 0x1000, 0x0800, 0x0400)
+    for flg, msk in zip(FLGS, masks):
+        flgs[flg] = flags & msk
+    return flgs
 
 
 class Decoder(json.JSONDecoder):
@@ -88,8 +97,9 @@ class DeviceHandler(MethodView):
             record = db.dump(device_id)
             if not record:
                 return "Not available"
+            flags = parse_flags(int(record[0][3], base=16))
             return render_template('maps.html', dev=device_id, lat=record[0][4],
-                                    lon=record[0][5], flg=record[0][3])
+                                    lon=record[0][5], flags=flags)
         config = prepare_config(db.dump_config(device_id))
         return Response(json.dumps(config),  mimetype='application/json')
 
