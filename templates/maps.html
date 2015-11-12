@@ -68,13 +68,13 @@
     <hr>
     <form role="form" method="post">
       <fieldset>
-        <legend><input type="checkbox" class="activator" name="htrAct" onclick="handleAct(this)"> HTTP tracking</legend>
+        <legend><input type="checkbox" id="htrActID" name="htrAct" onclick="handleAct(this)"> HTTP tracking</legend>
         <div id="htrDiv">
         <div class="checkbox" style="margin: 0"><label><input type="checkbox" id="htrCheckbox" name="htr" value="1" checked disabled>Enabled</label></div>
         </div>
       </fieldset>
       <fieldset id="smsForm">
-        <legend><input type="checkbox" class="activator" name="strAct" onclick="handleAct(this)"> SMS tracking</legend>
+        <legend><input type="checkbox" id="strActID" name="strAct" onclick="handleAct(this)"> SMS tracking</legend>
         <div id="strDiv" disabled>
         <div class="checkbox" style="margin-top: 0"><label><input type="checkbox" name="str" value="1" disabled checked>Enabled</label></div>
         <div class="form-group">
@@ -84,7 +84,7 @@
         </div>
       </fieldset>
       <fieldset id="tprRadio">
-        <legend><input type="checkbox" name="tprAct" onclick="handleAct(this)"> Tracking period</legend>
+        <legend><input type="checkbox" id="tprActID" name="tprAct" onclick="handleAct(this)"> Tracking period</legend>
         <div id="tprDiv" disabled="disabled">
         <div class="radio"><label><input type="radio" name="tpr" value="0" disabled>15 s</label></div>
         <div class="radio"><label><input type="radio" name="tpr" value="1" disabled checked>1 min</label></div>
@@ -104,6 +104,7 @@
     $('form').submit(function() {
         var form = $(this).serialize();
         var phone = document.forms["0"]["pho"].value;
+        var actIDs = [htrActID, strActID, tprActID];
 
         if (form == '') {
             return false;
@@ -115,6 +116,12 @@
             }
         }
         $.post($(this).attr('action'), $(this).serialize(), function(response) {
+            for (var i = 0; i < actIDs.length; i++) {
+                if (actIDs[i].checked) {
+                    actIDs[i].checked = false;
+                    handleAct(actIDs[i]);
+                }
+            }
             showAlert("#alertPlace", "Configuration saved", "alert-success");
         },'text');
         return false;
