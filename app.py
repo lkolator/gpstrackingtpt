@@ -11,7 +11,6 @@ import random
 from model import TrackerDatabase
 
 app = Flask(__name__)
-
 db = TrackerDatabase()
 
 CFG_PARAM = ('htr', 'str', 'tpr', 'pho')
