@@ -87,7 +87,7 @@ class Main(MethodView):
     def get(self):
         #return 'OK'
         #db.drop()
-        return "\n".join([str(record) for record in db.dump_all()])
+        return "<br>\n".join([str(record) for record in db.dump_all()])
 
 
 class DeviceHandler(MethodView):
