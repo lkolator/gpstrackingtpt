@@ -2,6 +2,7 @@ from datetime import timedelta
 from flask import Flask
 from flask import request, safe_join, session, app, g
 from flask import Response, render_template, send_from_directory
+from flask_socketio import SocketIO
 from flask.views import MethodView
 from pygeocoder import Geocoder
 import json
@@ -27,7 +28,7 @@ FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
 # {"srn":"00000000","htr":"X","str":"X","tpr":""X","pho":"+000000000000","www":"0000000000000000000000000000000000000000","prt":"00000"}"
 
 app = Flask(__name__)
-
+socketio = SocketIO(app)
 
 def prepare_config(record):
     config = {}
@@ -126,4 +127,4 @@ app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('deviceh
 
 if __name__ == '__main__':
     # app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-    app.run(debug=True, host='0.0.0.0', port=8111)
+    socketio.run(app, debug=True, host='0.0.0.0', port=8111)
