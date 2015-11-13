@@ -57,6 +57,17 @@ def parse_flags(flags):
         flgs[flg] = flags & msk
     return flgs
 
+class Integrity(object):
+    def __init__(self, name, mask_current=0x0000, mask_historical=0x0000):
+        self.name = name
+        self.h = mask_historical
+        self.c = mask_current
+
+    def has_current(self):
+        return self.c != 0
+
+    def has_historical(self):
+        return self.h != 0
 
 class Decoder(json.JSONDecoder):
     def _convert_coord(self, lat, lon):
@@ -86,10 +97,9 @@ class Decoder2(json.JSONDecoder):
 
 class Main(MethodView):
     def get(self):
-        #return 'OK'
-        #db.drop()
         return "<br>\n".join([str(record) for record in db.dump_all()])
 
+integrity = [Integrity('POWER'), Integrity('CASING')]
 
 class DeviceHandler(MethodView):
     def get(self, device_id):
@@ -99,7 +109,8 @@ class DeviceHandler(MethodView):
                 return "Not available"
             flags = parse_flags(int(record[0][3], base=16))
             return render_template('maps.html', dev=device_id, lat=record[0][4],
-                                    lon=record[0][5], flags=flags)
+                                    lon=record[0][5], flags=flags,
+                                    integrity=integrity)
         config = prepare_config(db.dump_config(device_id))
         return Response(json.dumps(config),  mimetype='application/json')
 

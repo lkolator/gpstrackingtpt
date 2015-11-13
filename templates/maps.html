@@ -10,8 +10,26 @@
             namespace = '/{{ dev }}';
             var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
 
-            socket.on('connect', function(){
+            // set integrity state
+            function set_integrity(id, val) {
+                if(val) {
+                    $(id).attr('class', 'glyphicon glyphicon-ok');
+                }
+                else {
+                    $(id).attr('class', 'glyphicon glyphicon-remove');
+                }
+            };
+
+            socket.on('connect', function() {
                 socket.emit('new connection');
+            });
+
+            socket.on('integrity', function(msg) {
+                // TODO: set integrity
+            });
+
+            socket.on('newpos', function(msg) {
+                // TODO: set new position     
             });
         });
     </script>
@@ -57,26 +75,13 @@
           </tr>
         </thead>
         <tbody>
+        {% for item in integrity %}
           <tr>
-            <td>POWER</td>
-            <td><span class="glyphicon glyphicon-minus"></span></td>
-            <td><span class="glyphicon glyphicon-{{'remove' if flags['power'] else 'ok'}}"></span></td>
+                <td>{{ item.name }}</td>
+                <td><span id="{{ item.name }}-CURRENT" class="{% if not item.has_current() %}glyphicon glyphicon-minus{% endif %}"></span></td>
+                <td><span id="{{ item.name }}-HISTORICAL" class="{% if not item.has_historical() %}glyphicon glyphicon-minus{% endif %}"></span></td>
           </tr>
-          <tr>
-            <td>CASING</td>
-            <td><span class="glyphicon glyphicon-{{'remove' if flags['casing'] else 'ok'}}"></span></td>
-            <td><span class="glyphicon glyphicon-{{'remove' if flags['casing_h'] else 'ok'}}"></span></td>
-          </tr>
-          <tr>
-            <td>STRAP</td>
-            <td><span class="glyphicon glyphicon-{{'remove' if flags['strap'] else 'ok'}}"></span></td>
-            <td><span class="glyphicon glyphicon-{{'remove' if flags['strap_h'] else 'ok'}}"></span></td>
-          </tr>
-          <tr>
-            <td>HW_ERR</td>
-            <td><span class="glyphicon glyphicon-minus"></span></td>
-            <td><span class="glyphicon glyphicon-{{'remove' if flags['hardware'] else 'ok'}}"></span></td>
-          </tr>
+        {% endfor%}
         </tbody>
       </table>
     <hr>
