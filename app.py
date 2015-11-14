@@ -87,8 +87,12 @@ class Main(MethodView):
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-            return render_template('maps.html', dev=device_id, lat=0.0,
-                                    lon=0.0, integrity=integlist.l)
+            lastrecord = get_db().get_last(device_id)
+            return render_template('maps.html',
+                    dev=device_id,
+                    lat=float(lastrecord[4]),
+                    lon=float(lastrecord[5]),
+                    integrity=integlist.l)
         config = prepare_config(get_db().dump_config(device_id))
         return Response(json.dumps(config),  mimetype='application/json')
 
@@ -127,7 +131,6 @@ def io_newconn(args):
     i, addtime, rectime, flags, lat, lon,_ = data
 
     emit('integrity', integlist.to_dict(int(flags, 16)), namespace='/' + str(devid))
-#    emit('integrity', {'test':'xxx'}, namespace = '/' + str(devid))
 
 app.add_url_rule('/', view_func=Main.as_view('main'))
 app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
