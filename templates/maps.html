@@ -9,10 +9,15 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsAw71SQ1-n_jNZ9JvlrqPdKE17asyovg&signed_in=true">
     </script>
     <script type="text/javascript" charset="utf-8">
+        function date_picked() {
+            var d = $('#datepick').find(":selected").text();
+            globsocket.emit('datepick', {device: '{{ dev }}', dp: d});
+        }
+
         $(document).ready(function(){
             namespace = '/{{ dev }}';
-            var devsocket = io.connect('http://' + document.domain + ':' + location.port + namespace);
-            var globsocket = io.connect('http://' + document.domain + ':' + location.port + '/');
+            devsocket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            globsocket = io.connect('http://' + document.domain + ':' + location.port + '/');
 
             // set integrity state
             function set_integrity(id, val) {
@@ -66,14 +71,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
 
-    <title>GPS Tracking OPT</title>
+    <title>OPT/TPT GPS Tracking</title>
   </head>
   <body>
     <div id="map"></div>
 
     <div id="info">
     <div class="container-fluid">
-      <h4>Flags:</h4>
       <table class="table borderless">
         <thead>
           <tr>
@@ -92,6 +96,13 @@
         {% endfor%}
         </tbody>
       </table>
+    <div align="right">
+      <select id="datepick" onChange="date_picked()">
+        {% for d in dates %}
+        <option value="{{ d }}">{{ d }}</option>
+        {% endfor %}
+      </select>
+    </div>
     <hr>
     <form role="form" method="post">
       <fieldset>

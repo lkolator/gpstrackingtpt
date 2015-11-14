@@ -88,11 +88,13 @@ class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
             lastrecord = get_db().get_last(device_id)
+            dates = get_db().get_dates(device_id)
             return render_template('maps.html',
                     dev=device_id,
                     lat=float(lastrecord[4]),
                     lon=float(lastrecord[5]),
-                    integrity=integlist.l)
+                    integrity=integlist.l,
+                    dates=dates)
         config = prepare_config(get_db().dump_config(device_id))
         return Response(json.dumps(config),  mimetype='application/json')
 
@@ -135,6 +137,12 @@ def io_newconn(args):
     i, addtime, rectime, flags, lat, lon,_ = data
 
     emit('integrity', integlist.to_dict(int(flags, 16)), namespace='/' + str(devid))
+
+@socketio.on('datepick')
+def io_datepick(args):
+    devid = int(args['device'])
+    dp = args['dp']
+    # TODO: send route
 
 app.add_url_rule('/', view_func=Main.as_view('main'))
 app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))

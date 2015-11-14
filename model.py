@@ -76,7 +76,7 @@ class TrackerDatabase(object):
     def get_dates(self, device):
         cur = self.conn.cursor()
         cur.execute('select addtime from trackdata where device is ' + str(device))
-        return sorted(set([dt[0].split()[0] for dt in c.fetchall()]))
+        return sorted(set([dt[0].split()[0] for dt in cur.fetchall()]))
 
     def is_config(self, device):
         cur = self.conn.cursor()
