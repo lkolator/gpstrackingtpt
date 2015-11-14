@@ -73,6 +73,11 @@ class TrackerDatabase(object):
         cur.execute('select * from trackdata where id=(select max(id) from trackdata where device is ' + str(device) + ')')
         return cur.fetchone()
 
+    def get_dates(self, device):
+        cur = self.conn.cursor()
+        cur.execute('select addtime from trackdata where device is ' + str(device))
+        return sorted(set([dt[0].split()[0] for dt in c.fetchall()]))
+
     def is_config(self, device):
         cur = self.conn.cursor()
         cur.execute('select new from ' + self.cname + ' where device=?;', (device,))
