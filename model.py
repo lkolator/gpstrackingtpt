@@ -68,6 +68,11 @@ class TrackerDatabase(object):
         self.conn.commit()
         return cfg
 
+    def get_last(self, device):
+        cur = self.conn.cursor()
+        cur.execute('select * from trackdata where id=(select max(id) from trackdata where device is ' + str(device) + ')')
+        return cur.fetchone()
+
     def is_config(self, device):
         cur = self.conn.cursor()
         cur.execute('select new from ' + self.cname + ' where device=?;', (device,))
@@ -79,3 +84,49 @@ class TrackerDatabase(object):
 
     def __str__(self):
         return "Tracker db: " + self.dbname + "(" + self.tname + ")"
+
+class Integrity(object):
+    def __init__(self, name, mask_current=0x0000, mask_historical=0x0000):
+        self.name = name
+        self.h = mask_historical
+        self.c = mask_current
+
+    def has_current(self):
+        return self.c != 0
+
+    def has_historical(self):
+        return self.h != 0
+
+    def test_current(self, flags):
+        if self.has_current() is False:
+            return None
+        return (self.c & flags) != 0
+
+    def test_historical(self, flags):
+        if self.has_historical() is False:
+            return None
+        return (self.h & flags) != 0
+
+class IntegrityList(object):
+    def __init__(self, l):
+        self.l = l
+
+    def test(self, flags):
+        return [(i.name, i.test_current(flags), i.test_historical(flags)) for i in self.l]
+
+    def to_dict(self, flags):
+        d = {}
+        for integ, c, h in self.test(flags):
+            if c is not None:
+                d[integ + "-CURRENT"] = c
+            if h is not None:
+                d[integ + "-HISTORICAL"] = h
+
+        return d 
+
+integlist = IntegrityList([
+    Integrity('Power', 0x8000),
+    Integrity('Casing', 0x4000, 0x2000),        
+    Integrity('Strap', 0x1000, 0x0800),
+    Integrity('Hardware', 0x0000, 0x0400)
+])

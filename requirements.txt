@@ -1,6 +1,6 @@
 Flask==0.10.1
-Flask-SocketIO==1.0
 Flask-Admin==1.1.0
+Flask-SocketIO==1.0
 Jinja2==2.8
 MarkupSafe==0.23
 WTForms==2.0.2
@@ -10,7 +10,10 @@ anyjson==0.3.3
 argparse==1.2.1
 billiard==3.3.0.20
 geojson==1.0.9
+gevent==1.0.2
 google-api-python-client==1.4.0
+greenlet==0.4.9
+gunicorn==19.3.0
 httplib2==0.9.1
 itsdangerous==0.24
 kombu==3.0.26
@@ -28,4 +31,3 @@ simplejson==3.6.5
 six==1.10.0
 uritemplate==0.6
 wsgiref==0.1.2
-gunicorn==19.3.0

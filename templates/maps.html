@@ -8,27 +8,34 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             namespace = '/{{ dev }}';
-            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            var devsocket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            var globsocket = io.connect('http://' + document.domain + ':' + location.port + '/');
 
             // set integrity state
             function set_integrity(id, val) {
                 if(val) {
-                    $(id).attr('class', 'glyphicon glyphicon-ok');
+                    $(id).attr('class', 'glyphicon glyphicon-remove');
                 }
                 else {
-                    $(id).attr('class', 'glyphicon glyphicon-remove');
+                    $(id).attr('class', 'glyphicon glyphicon-ok');
                 }
             };
 
-            socket.on('connect', function() {
-                socket.emit('new connection');
+            globsocket.on('connect', function() {
+                globsocket.emit('new connection', {device: '{{ dev }}'});
             });
 
-            socket.on('integrity', function(msg) {
-                // TODO: set integrity
+            devsocket.on('integrity', function(msg) {
+                if ( msg == null ) {
+                    return;
+                }
+
+                for (var key in msg) {
+                    set_integrity('#' + key, msg[key]);
+                }
             });
 
-            socket.on('newpos', function(msg) {
+            devsocket.on('newpos', function(msg) {
                 // TODO: set new position     
             });
         });
