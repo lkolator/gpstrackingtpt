@@ -38,7 +38,9 @@
                 }
             });
 
-            devsocket.on('newpos', function(msg) {
+            devsocket.on('newpos', function(pos) {
+                marker.setPosition(pos);
+                map.setCenter(pos);
             });
         });
 
