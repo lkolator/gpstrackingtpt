@@ -13,7 +13,6 @@ import random
 import sys
 
 app = Flask(__name__)
-db = TrackerDatabase()
 
 CFG_PARAM = ('htr', 'str', 'tpr', 'pho')
 FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
@@ -30,6 +29,14 @@ FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        print "Creating database object"
+        db = g._database = TrackerDatabase()
+
+    return db
 
 def prepare_config(record):
     config = {}
@@ -98,28 +105,28 @@ class Decoder2(json.JSONDecoder):
 
 class Main(MethodView):
     def get(self):
-        return "<br>\n".join([str(record) for record in db.dump_all()])
+        return "<br>\n".join([str(record) for record in get_db().dump_all()])
 
 integrity = [Integrity('POWER'), Integrity('CASING')]
 
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
-            record = db.dump(device_id)
+            record = get_db().dump(device_id)
             if not record:
                 return "Not available"
             flags = parse_flags(int(record[0][3], base=16))
             return render_template('maps.html', dev=device_id, lat=record[0][4],
                                     lon=record[0][5], flags=flags,
                                     integrity=integrity)
-        config = prepare_config(db.dump_config(device_id))
+        config = prepare_config(get_db().dump_config(device_id))
         return Response(json.dumps(config),  mimetype='application/json')
 
     def post(self, device_id):
         try:
             if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
                 rec = prepare_form(request.form.to_dict())
-                db.update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'])
+                get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'])
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
             try:
@@ -127,10 +134,11 @@ class DeviceHandler(MethodView):
             except:
                 results = "Not available"
             print results
-            db.insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
-            cfg = dict.fromkeys(['cfg'], db.is_config(device_id))
+            get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
+            cfg = dict.fromkeys(['cfg'], get_db().is_config(device_id))
             return Response(json.dumps(cfg),  mimetype='application/json')
-        except:
+        except Exception as e:
+            print e
             return "Failed"
 
 
