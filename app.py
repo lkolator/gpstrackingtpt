@@ -140,10 +140,10 @@ app.add_url_rule('/', view_func=Main.as_view('main'))
 app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
 
 if __name__ == '__main__':
-    try:
+    if len(sys.argv) == 2:
         port = int(sys.argv[1])
-    except:
-        port = 8111
+    else:
+        port = int(os.environ.get("PORT", 8111))
 
     # app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     socketio.run(app, debug=True, host='0.0.0.0', port=port)
