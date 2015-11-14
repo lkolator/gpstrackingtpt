@@ -133,8 +133,12 @@ class DeviceHandler(MethodView):
                 results = Geocoder.reverse_geocode(data['lat'], data['lon'])
             except:
                 results = "Not available"
-            print results
-            get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
+            
+            if float(data['lat']) != 0.0 and float(data['lon']) != 0.0:
+                get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
+            else:
+                print "Cannot acquire GPS fix!"
+
             cfg = dict.fromkeys(['cfg'], get_db().is_config(device_id))
             return Response(json.dumps(cfg),  mimetype='application/json')
         except Exception as e:
