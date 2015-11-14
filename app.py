@@ -110,7 +110,7 @@ class DeviceHandler(MethodView):
             
             if float(data['lat']) != 0.0 and float(data['lon']) != 0.0:
                 get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
-                socketio.emit('newpos', {'lat': float(data['lat']), 'lng': float(data['lat'])}, namespace='/' + str(device_id))
+                socketio.emit('newpos', {'lat': float(data['lat']), 'lng': float(data['lon'])}, namespace='/' + str(device_id))
             else:
                 print "Cannot acquire GPS fix!"
 
