@@ -80,7 +80,7 @@ class Decoder2(json.JSONDecoder):
         obj = obj.replace('\x27', '\x22')
         return json.JSONDecoder.decode(self, obj)
 
-class Main(MethodView):
+class Dump(MethodView):
     def get(self):
         return "<br>\n".join([str(record) for record in get_db().dump_all()])
 
@@ -152,8 +152,12 @@ def io_datepick(args):
     dp = args['dp']
     emit_route(dp, devid)
 
-app.add_url_rule('/', view_func=Main.as_view('main'))
+app.add_url_rule('/dump', view_func=Dump.as_view('dump'))
 app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
+
+@app.route('/')
+def root():
+    return "<br>".join(['<a href="/' + str(d) + '">' + str(d) + '</a>' for d in get_db().get_sns()])
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:

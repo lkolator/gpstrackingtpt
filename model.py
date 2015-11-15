@@ -10,7 +10,7 @@ def date_filter(data, d):
     for el in data:
         if el[1].startswith(d): yield el
 
-def distance_filter(data, distance=50.0):
+def distance_filter(data, distance=5.0):
     yield data[0]
     last = data[0]
     for i in range(1, len(data) - 1):
@@ -97,6 +97,11 @@ class TrackerDatabase(object):
         cur = self.conn.cursor()
         cur.execute('select addtime from trackdata where device is ' + str(device))
         return sorted(set([dt[0].split()[0] for dt in cur.fetchall()]))
+
+    def get_sns(self):
+        cur = self.conn.cursor()
+        cur.execute('select distinct device from trackdata')
+        return [d[0] for d in cur.fetchall()]
 
     def is_config(self, device):
         cur = self.conn.cursor()
