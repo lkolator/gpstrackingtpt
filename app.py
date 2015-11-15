@@ -153,7 +153,7 @@ def io_datepick(args):
     emit_route(dp, devid)
 
 app.add_url_rule('/dump', view_func=Dump.as_view('dump'))
-app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
+app.add_url_rule('/<int:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
 
 @app.route('/')
 def root():
