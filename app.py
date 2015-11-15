@@ -4,7 +4,6 @@ from flask import request, safe_join, session, app, g
 from flask import Response, render_template, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
-from pygeocoder import Geocoder
 from model import TrackerDatabase, integlist, route_to_dict, distance_filter
 import json
 import os
@@ -106,10 +105,6 @@ class DeviceHandler(MethodView):
                 get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'])
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
-            try:
-                results = Geocoder.reverse_geocode(data['lat'], data['lon'])
-            except:
-                results = "Not available"
             
             if float(data['lat']) != 0.0 and float(data['lon']) != 0.0:
                 get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
