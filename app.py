@@ -83,6 +83,12 @@ class Dump(MethodView):
     def get(self):
         return "<br>\n".join([str(record) for record in get_db().dump_all()])
 
+
+class Index(MethodView):
+    def get(self):
+        return render_template('index.html', devices=db.get_sns())
+
+
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
@@ -147,12 +153,10 @@ def io_datepick(args):
     dp = args['dp']
     emit_route(dp, devid)
 
+app.add_url_rule('/', view_func=Index.as_view('index'))
 app.add_url_rule('/dump', view_func=Dump.as_view('dump'))
 app.add_url_rule('/<int:device_id>', view_func=DeviceHandler.as_view('devicehandler'))
 
-@app.route('/')
-def root():
-    return "<br>".join(['<a href="/' + str(d) + '">' + str(d) + '</a>' for d in get_db().get_sns()])
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:

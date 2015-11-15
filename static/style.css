@@ -42,3 +42,28 @@ legend {
 .glyphicon.glyphicon-minus {
   color: grey;
 }
+.bg-1 {
+  background-color: #1abc9c;
+  color: #ffffff;
+}
+.dropdown {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translateY(-50%);
+  right: auto;
+  text-align: center;
+  transform: translate(-50%, 0);
+}
+.scrollable-menu {
+  height: auto;
+  max-height: 200px;
+  overflow-x: hidden;
+  left: 50%;
+  right: auto;
+  text-align: center;
+  transform: translate(-50%, 0);
+}
+.btn{
+  width: 150px;
+}
