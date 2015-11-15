@@ -152,11 +152,11 @@ class IntegrityList(object):
             if h is not None:
                 d[integ + "-HISTORICAL"] = h
 
-        return d 
+        return d
 
 integlist = IntegrityList([
-    Integrity('Power', 0x8000),
-    Integrity('Casing', 0x4000, 0x2000),        
+    Integrity('Power', 0x0000, 0x8000),
+    Integrity('Casing', 0x4000, 0x2000),
     Integrity('Strap', 0x1000, 0x0800),
     Integrity('Hardware', 0x0000, 0x0400)
 ])
