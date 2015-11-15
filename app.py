@@ -5,7 +5,7 @@ from flask import Response, render_template, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
 from pygeocoder import Geocoder
-from model import TrackerDatabase, integlist
+from model import TrackerDatabase, integlist, route_to_dict, distance_filter
 import json
 import os
 import time
@@ -89,6 +89,7 @@ class DeviceHandler(MethodView):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
             lastrecord = get_db().get_last(device_id)
             dates = get_db().get_dates(device_id)
+            dates.reverse()
             return render_template('maps.html',
                     dev=device_id,
                     lat=float(lastrecord[4]),
@@ -125,6 +126,11 @@ class DeviceHandler(MethodView):
             print e
             return "Failed"
 
+def emit_route(dp, devid):
+    data = get_db().geo_by_date(devid, dp)
+    route = route_to_dict([r for r in distance_filter(data)])
+    emit('route', {'positions': route}, namespace='/' + str(devid))
+
 @socketio.on('new connection')
 def io_newconn(args):
     devid = int(args['device'])
@@ -132,17 +138,19 @@ def io_newconn(args):
     data = get_db().get_last(devid)
     if data is None:
         return
+    last_date = get_db().get_dates(devid)[-1]
 
     print "Refreshing state of... " + str(devid)
     i, addtime, rectime, flags, lat, lon,_ = data
 
     emit('integrity', integlist.to_dict(int(flags, 16)), namespace='/' + str(devid))
+    emit_route(last_date, devid)
 
 @socketio.on('datepick')
 def io_datepick(args):
     devid = int(args['device'])
     dp = args['dp']
-    # TODO: send route
+    emit_route(dp, devid)
 
 app.add_url_rule('/', view_func=Main.as_view('main'))
 app.add_url_rule('/<string:device_id>', view_func=DeviceHandler.as_view('devicehandler'))

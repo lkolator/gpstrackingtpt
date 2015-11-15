@@ -10,6 +10,7 @@ anyjson==0.3.3
 argparse==1.2.1
 billiard==3.3.0.20
 geojson==1.0.9
+geopy==1.11.0
 gevent==1.0.2
 google-api-python-client==1.4.0
 greenlet==0.4.9

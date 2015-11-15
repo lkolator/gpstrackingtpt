@@ -1,8 +1,25 @@
 import sqlite3
+import json
+from geopy.distance import great_circle
 
 DBNAME="tracker.db"
 TNAME="trackdata"
 CNAME="configdata"
+
+def date_filter(data, d):
+    for el in data:
+        if el[1].startswith(d): yield el
+
+def distance_filter(data, distance=50.0):
+    yield data[0]
+    last = data[0]
+    for i in range(1, len(data) - 1):
+        if great_circle(data[i], last).meters > distance:
+            last = data[i]
+            yield last
+
+def route_to_dict(route):
+    return [{'lat': lat, 'lng': lng} for lat, lng in route]
 
 class TrackerDatabase(object):
     def __init__(self, dbname = DBNAME, tname = TNAME, cname = CNAME):
@@ -45,6 +62,9 @@ class TrackerDatabase(object):
     def dump_all(self):
         cur = self.conn.cursor()
         return [row for row in cur.execute('select * from ' + self.tname + ';')]
+
+    def geo_by_date(self, device, date):
+        return [(d[4], d[5]) for d in date_filter(self.dump(device, -1), date)]
 
     def drop(self):
         cur = self.conn.cursor()
