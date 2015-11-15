@@ -86,7 +86,7 @@ class Dump(MethodView):
 
 class Index(MethodView):
     def get(self):
-        return render_template('index.html', devices=db.get_sns())
+        return render_template('index.html', devices=get_db().get_sns())
 
 
 class DeviceHandler(MethodView):
@@ -111,7 +111,7 @@ class DeviceHandler(MethodView):
                 get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'])
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
-            
+
             if float(data['lat']) != 0.0 and float(data['lon']) != 0.0:
                 get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
                 socketio.emit('newpos', {'lat': float(data['lat']), 'lng': float(data['lon'])}, namespace='/' + str(device_id))
