@@ -4,7 +4,7 @@ from flask import request, safe_join, session, app, g
 from flask import Response, render_template, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
-from model import TrackerDatabase, integlist, route_to_dict, distance_filter
+from model import TrackerDatabase, integlist, route_to_dict, distance_filter, zero_pos_filter
 import json
 import os
 import time
@@ -92,13 +92,22 @@ class Index(MethodView):
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
+            lat = 0.0
+            lon = 0.0
             lastrecord = get_db().get_last(device_id)
+            try:
+                posrecord = [d for d in zero_pos_filter(get_db().dump(device_id, -1))][-1]
+                lat = float(posrecord[4])
+                lon = float(posrecord[5])
+            except:
+                pass
+
             dates = get_db().get_dates(device_id)
             dates.reverse()
             return render_template('maps.html',
                     dev=device_id,
-                    lat=float(lastrecord[4]),
-                    lon=float(lastrecord[5]),
+                    lat=lat,
+                    lon=lon,
                     integrity=integlist.l,
                     dates=dates)
         config = prepare_config(get_db().dump_config(device_id))
@@ -112,11 +121,10 @@ class DeviceHandler(MethodView):
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
 
+            # insert data and change pos if not zero
+            get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
             if float(data['lat']) != 0.0 and float(data['lon']) != 0.0:
-                get_db().insert(device_id, data['utc'], data['flg'], data['lat'], data['lon'])
                 socketio.emit('newpos', {'lat': float(data['lat']), 'lng': float(data['lon'])}, namespace='/' + str(device_id))
-            else:
-                print "Cannot acquire GPS fix!"
 
             # update integrity status
             socketio.emit('integrity', integlist.to_dict(int(data['flg'], 16)), namespace='/' + str(device_id))

@@ -10,6 +10,10 @@ def date_filter(data, d):
     for el in data:
         if el[1].startswith(d): yield el
 
+def zero_pos_filter(data):
+    for el in data:
+        if float(el[4]) != 0.0 or float(el[5]) != 0.0: yield el
+
 def distance_filter(data, distance=5.0):
     yield data[0]
     last = data[0]
@@ -64,7 +68,7 @@ class TrackerDatabase(object):
         return [row for row in cur.execute('select * from ' + self.tname + ';')]
 
     def geo_by_date(self, device, date):
-        return [(d[4], d[5]) for d in date_filter(self.dump(device, -1), date)]
+        return [(d[4], d[5]) for d in zero_pos_filter(date_filter(self.dump(device, -1), date))]
 
     def drop(self):
         cur = self.conn.cursor()
