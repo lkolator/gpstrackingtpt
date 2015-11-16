@@ -15,6 +15,7 @@ def zero_pos_filter(data):
         if float(el[4]) != 0.0 or float(el[5]) != 0.0: yield el
 
 def distance_filter(data, distance=5.0):
+    if len(data) == 0: return
     yield data[0]
     last = data[0]
     for i in range(1, len(data) - 1):
