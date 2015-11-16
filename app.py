@@ -15,16 +15,6 @@ app = Flask(__name__)
 
 CFG_PARAM = ('htr', 'str', 'tpr', 'pho')
 FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
-# "{"srn":"00000000","lat":"00000.00000X","lon":"00000.00000X","utc":"000000.00","acc":"00000","flg":"0000"}";
-# htr - HTTP tracking; 0 - off, 1 - on
-# str - SMS tracking; 0 - off, 1 - on
-# tpr - tracking period; 0 - 15s, 1 - 1min, 2 - 5min, 3 - 30min
-# pho - SMS reporting phone number; variable field length (?), must be '\0'
-# terminated
-# www - HTTP reporting address; variable field length (?), must be '\0'
-# terminated
-# prt - HTTP reporting port number
-# {"srn":"00000000","htr":"X","str":"X","tpr":""X","pho":"+000000000000","www":"0000000000000000000000000000000000000000","prt":"00000"}"
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='gevent')
