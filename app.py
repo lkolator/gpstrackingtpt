@@ -85,6 +85,8 @@ class DeviceHandler(MethodView):
             lat = 0.0
             lon = 0.0
             lastrecord = get_db().get_last(device_id)
+            if lastrecord is None:
+                return "No such device"
             try:
                 posrecord = [d for d in zero_pos_filter(get_db().dump(device_id, -1))][-1]
                 lat = float(posrecord[4])
