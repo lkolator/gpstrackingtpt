@@ -48,6 +48,7 @@ class TrackerDatabase(object):
                         smstracking TEXT, \
                         period TEXT, \
                         phone TEXT, \
+                        mode TEXT, \
                         new TEXT, \
                         device INTEGER PRIMARY KEY \
                         );')
@@ -78,18 +79,18 @@ class TrackerDatabase(object):
     def update(self, device, htr, str, tpr, pho):
         cur = self.conn.cursor()
         cur.execute('insert or replace into ' + self.cname +
-                    '(addtime, device, httptracking, smstracking, period, phone, new) \
-                    values(DateTime(\'now\'), ?, ?, ?, ?, ?, "1");', (device, htr, str, tpr, pho))
+                    '(addtime, device, httptracking, smstracking, period, phone, mode, new) \
+                    values(DateTime(\'now\'), ?, ?, ?, ?, ?, ?, "1");', (device, htr, str, tpr, pho, mod))
         self.conn.commit()
 
     def dump_config(self, device):
         cur = self.conn.cursor()
-        cur.execute('select httptracking, smstracking, period, phone from ' +
+        cur.execute('select httptracking, smstracking, period, phone, mode from ' +
                     self.cname + ' where device=?;', (device,))
         cfg = cur.fetchone()
         cur.execute('insert or replace into ' + self.cname +
-                    '(addtime, device, httptracking, smstracking, period, phone, new) \
-                    values(DateTime(\'now\'), ?, "", "", "", "", "0");', (device,))
+                    '(addtime, device, httptracking, smstracking, period, phone, mode, new) \
+                    values(DateTime(\'now\'), ?, "", "", "", "", "", "0");', (device,))
         self.conn.commit()
         return cfg
 

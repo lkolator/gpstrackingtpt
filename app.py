@@ -13,7 +13,7 @@ import sys
 
 app = Flask(__name__)
 
-CFG_PARAM = ('htr', 'str', 'tpr', 'pho')
+CFG_PARAM = ('htr', 'str', 'tpr', 'pho', 'mod')
 FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
 
 app = Flask(__name__)
