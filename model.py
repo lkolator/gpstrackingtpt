@@ -76,7 +76,7 @@ class TrackerDatabase(object):
         cur = self.conn.cursor()
         cur.execute('drop table if exists ' + self.tname + ';')
 
-    def update(self, device, htr, str, tpr, pho):
+    def update(self, device, htr, str, tpr, pho, mod):
         cur = self.conn.cursor()
         cur.execute('insert or replace into ' + self.cname +
                     '(addtime, device, httptracking, smstracking, period, phone, mode, new) \

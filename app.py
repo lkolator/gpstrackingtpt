@@ -109,7 +109,7 @@ class DeviceHandler(MethodView):
         try:
             if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
                 rec = prepare_form(request.form.to_dict())
-                get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'])
+                get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'], rec['mod'])
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
 
