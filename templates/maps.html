@@ -52,7 +52,7 @@
                 if (path != null) {
                     path.setMap(null);
                 }
-                
+
                 path = new google.maps.Polyline({
                     path: msg.positions,
                     geodesic: true,
@@ -148,6 +148,13 @@
         <div class="radio"><label><input type="radio" name="tpr" value="3" disabled>30 min</label></div>
         </div>
       </fieldset>
+      <fieldset>
+        <legend><input type="checkbox" id="modActID" name="modAct" onclick="handleAct(this)"> GPS mode</legend>
+        <div id="modDiv" disabled="disabled">
+        <div class="radio"><label><input type="radio" name="mod" value="0" disabled>no aiding</label></div>
+        <div class="radio"><label><input type="radio" name="mod" value="4" disabled checked>AssistNow Online</label></div>
+        </div>
+      </fieldset>
       <br>
       <div style="text-align:center">
         <button type="submit" class="btn btn-default">Save & Send</button>
@@ -160,7 +167,7 @@
     $('form').submit(function() {
         var form = $(this).serialize();
         var phone = document.forms["0"]["pho"].value;
-        var actIDs = [htrActID, strActID, tprActID];
+        var actIDs = [htrActID, strActID, tprActID, modActID];
 
         if (form == '') {
             return false;

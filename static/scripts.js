@@ -21,6 +21,9 @@ function handleAct(cb) {
         case "tprAct":
             inputName = "#tprDiv";
             break;
+        case "modAct":
+            inputName = "#modDiv";
+            break;
         default:
     }
 
