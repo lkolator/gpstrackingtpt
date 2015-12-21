@@ -151,10 +151,17 @@
       <fieldset>
         <legend><input type="checkbox" id="modActID" name="modAct" onclick="handleAct(this)"> GPS mode</legend>
         <div id="modDiv" disabled="disabled">
-        <div class="radio"><label><input type="radio" name="mod" value="0" disabled>no aiding</label></div>
-        <div class="radio"><label><input type="radio" name="mod" value="1" disabled>automatic local aiding</label></div>
-        <div class="radio"><label><input type="radio" name="mod" value="4" disabled checked>AssistNow Online</label></div>
-        <div class="radio"><label><input type="radio" name="mod" value="8" disabled checked>AssistNow Autonomous</label></div>
+        <div style="float:left">
+          <div class="radio"><label><input type="radio" name="mod" value="0" disabled>no aiding</label></div>
+          <div class="radio"><label><input type="radio" name="mod" value="1" disabled>automatic local aiding</label></div>
+          <div class="radio"><label><input type="radio" name="mod" value="4" disabled checked>AssistNow Online</label></div>
+          <div class="radio"><label><input type="radio" name="mod" value="8" disabled>AssistNow Autonomous</label></div>
+        </div>
+        <fieldset style="float:right">
+          <legend>CellLocate</legend>
+          <div class="radio"><label><input type="radio" name="mod" value="5" disabled>normal scan</label></div>
+          <div class="radio"><label><input type="radio" name="mod" value="6" disabled>deep scan</label></div>
+        </fieldset>
         </div>
       </fieldset>
       <br>
