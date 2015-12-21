@@ -47,7 +47,7 @@ def prepare_form(config):
 class Decoder(json.JSONDecoder):
     def _convert_coord(self, lat, lon):
         if lat[2] == '.' and lon[2] == '.':
-            lat, lon = float(lat), float(lon)
+            lat_coord, lon_coord = float(lat[:-1]), float(lon[:-1])
         else:
             lat_coord = int(lat[:3]) + float(lat[3:len(lat) - 1])/60
             lon_coord = int(lon[:3]) + float(lon[3:len(lon) - 1])/60
