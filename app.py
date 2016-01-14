@@ -19,6 +19,10 @@ FLGS = ('power', 'casing', 'casing_h', 'strap', 'strap_h', 'hardware')
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='gevent')
 
+# Examples:
+# $GPGSV,12,05,50,07,,13,48,15,48,17,27,18,40,19,28,20,51,21,43,27,33,28,34,30,
+# $GPGSA,A,3,05,13,15,20,30,28,,,,,,,3.62,1.62,3.23
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
