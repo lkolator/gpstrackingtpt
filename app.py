@@ -111,8 +111,9 @@ class DeviceHandler(MethodView):
                 rec = prepare_form(request.form.to_dict())
                 get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'], rec['mod'])
                 return "OK"
-            print request.headers.get('Content-type')
-            print request.data
+            if request.headers.get('Content-type') is 'text/plain':
+                print request.data
+                return "OK"
             data = json.loads(request.data, cls=Decoder)
 
             # insert data and change pos if not zero
