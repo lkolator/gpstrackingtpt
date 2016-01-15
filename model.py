@@ -5,6 +5,7 @@ from geopy.distance import great_circle
 DBNAME="tracker.db"
 TNAME="trackdata"
 CNAME="configdata"
+SNAME="satellitedata"
 
 def date_filter(data, d):
     for el in data:
@@ -27,7 +28,8 @@ def route_to_dict(route):
     return [{'lat': lat, 'lng': lng} for lat, lng in route]
 
 class TrackerDatabase(object):
-    def __init__(self, dbname = DBNAME, tname = TNAME, cname = CNAME):
+    def __init__(self, dbname = DBNAME, tname = TNAME, cname = CNAME, sname = SNAME):
+        self.sname = sname
         self.cname = cname
         self.tname = tname
         self.dbname = dbname
@@ -50,6 +52,11 @@ class TrackerDatabase(object):
                         phone TEXT, \
                         mode TEXT, \
                         new TEXT, \
+                        device INTEGER PRIMARY KEY \
+                        );')
+        cur.execute('create table if not exists ' + self.sname +
+                   '(   GPGSV TEXT, \
+                        GPGSA TEXT, \
                         device INTEGER PRIMARY KEY \
                         );')
 
@@ -82,6 +89,22 @@ class TrackerDatabase(object):
                     '(addtime, device, httptracking, smstracking, period, phone, mode, new) \
                     values(DateTime(\'now\'), ?, ?, ?, ?, ?, ?, "1");', (device, htr, str, tpr, pho, mod))
         self.conn.commit()
+
+    def update_sat(self, device, gpgsv=None, gpgsa=None):
+        cur = self.conn.cursor()
+        if gpgsv:
+            cur.execute('update ' + self.sname + ' set gpgsv=? where device=?;', (gpgsv, device))
+        if gpgsa:
+            cur.execute('update ' + self.sname + ' set gpgsa=? where device=?;', (gpgsa, device))
+        cur.execute('insert or ignore into ' + self.sname +
+                    '(gpgsv, gpgsa, device) \
+                    values(?, ?, ?);', (gpgsv, gpgsa, device))
+        self.conn.commit()
+
+    def dump_sat(self, device):
+        cur = self.conn.cursor()
+        cur.execute('select * from ' + self.sname + ' where device=?;', (device,))
+        return cur.fetchone()
 
     def dump_config(self, device):
         cur = self.conn.cursor()

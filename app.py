@@ -86,6 +86,13 @@ class Index(MethodView):
 class DeviceHandler(MethodView):
     def get(self, device_id):
         if 'UBLOX-HttpClient' not in request.headers.get('User-Agent'):
+            gpgsv = {}
+            data = get_db().dump_sat(device_id)
+            print data
+            data = data[0].split(',')
+            for key, val in zip(data[::2], data[1::2]):
+                gpgsv[key] = val
+            return render_template('satel.html', gpgsv=json.dumps(gpgsv))
             lat = 0.0
             lon = 0.0
             lastrecord = get_db().get_last(device_id)
@@ -117,6 +124,10 @@ class DeviceHandler(MethodView):
                 return "OK"
             if 'text/plain' in request.headers.get('Content-type'):
                 print request.data
+                if 'GPGSV' in request.data:
+                    get_db().update_sat(device_id, gpgsv=request.data)
+                if 'GPGSA' in request.data:
+                    get_db().update_sat(device_id, gpgsa=request.data)
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
 
