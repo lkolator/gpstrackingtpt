@@ -79,6 +79,7 @@
       <script>
         var parent = document.getElementById("sats");
         var json = {{gpgsv | safe}};
+        var size;
         delete json["GPGSV"];
         for (var key in json) {
             var div = document.createElement("div");
@@ -93,10 +94,12 @@
             var ctx = canvas.getContext("2d");
             ctx.fillStyle = db2color(parseInt(json[key]));
             ctx.fillRect(0, canvas.height, canvas.width, -(parseInt(json[key])*canvas.height)/100);
+            size = canvas.width/2;
+            ctx.font = size.toString() + "px Arial";
             ctx.fillStyle = "black";
             ctx.textAlign = "center";
             ctx.fillText(json[key], canvas.width/2, canvas.height - ((parseInt(json[key])*canvas.height)/100) - 5);
-            ctx.fillText(key, canvas.width/2, canvas.height-5);
+            ctx.fillText(key, canvas.width/2, canvas.height - 5);
         }
 
         function db2color(db) {
