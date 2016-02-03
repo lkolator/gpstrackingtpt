@@ -103,17 +103,18 @@ class DeviceHandler(MethodView):
             pass
         if DetectMobileBrowser.process_ua(user_agent):
             # Mobile
-            gpgsv = {}
+            gpgsv_d = {}
             data = get_db().dump_sat(device_id)
             try:
-                data = data[0].split(',')
+                gpgsv = data[0].split(',')
+                gpgsa = data[1].split(',')
             except Exception as e:
                 print e
                 return "No data"
-            for key, val in zip(data[::2], data[1::2]):
-                gpgsv[key] = val
+            for key, val in zip(gpgsv[::2], gpgsv[1::2]):
+                gpgsv_d[key] = val
             return render_template('satel.html', dev=device_id, lat=lat, lon=lon,
-                                    gpgsv=json.dumps(gpgsv))
+                                    gpgsv=json.dumps(gpgsv_d), gpgsa=json.dumps(gpgsa))
         else:
             # Desktop
             dates = get_db().get_dates(device_id)

@@ -76,6 +76,12 @@
     <div id="map"></div>
     <div id="info">
       <div id="sats" class="row-fluid"></div>
+      <div id="sats_info" class="row-fluid">
+          <div class="span4"><h3 id="fix">FIX: </h3></div>
+          <div class="span4"><h3 id="pdop">PDOP: </h3></div>
+          <div class="span4"><h3 id="hdop">HDOP: </h3></div>
+          <div class="span4"><h3 id="vdop">VDOP: </h3></div>
+      </div>
       <script>
         var parent = document.getElementById("sats");
         var json = {{gpgsv | safe}};
@@ -119,6 +125,30 @@
                 return "darkgreen";
             }
         }
+      </script>
+      <script>
+        var gpgsa = {{gpgsa | safe}};
+        var fix = document.getElementById("fix");
+        var pdop = document.getElementById("pdop");
+        var hdop = document.getElementById("hdop");
+        var vdop = document.getElementById("vdop");
+        switch (parseInt(gpgsa[2])) {
+            case 1:
+                fix.innerHTML = "FIX: not available";
+                break;
+            case 2:
+                fix.innerHTML = "FIX: 2D";
+                break;
+            case 3:
+                fix.innerHTML = "FIX: 3D";
+                break;
+            default:
+                fix.innerHTML = "FIX: none";
+                break;
+        }
+        pdop.innerHTML = "PDOP: " + gpgsa[gpgsa.length - 3];
+        hdop.innerHTML = "HDOP: " + gpgsa[gpgsa.length - 2];
+        vdop.innerHTML = "VDOP: " + gpgsa[gpgsa.length - 1];
       </script>
       <!-- <canvas id="myCanvas" width="1000" height="1000"></canvas> -->
       <!-- <script>
