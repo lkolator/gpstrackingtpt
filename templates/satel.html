@@ -35,6 +35,14 @@
                 map.setCenter(pos);
             });
 
+            devsocket.on('newgpgsv', function(msg) {
+                    draw_gpgsv(msg);
+            });
+
+            devsocket.on('newgpgsa', function(msg) {
+                    draw_gpgsa(msg);
+            });
+
             devsocket.on('route', function(msg) {
                 if (path != null) {
                     path.setMap(null);
@@ -67,6 +75,84 @@
 
             path = null;
         });
+
+        function draw_gpgsv(msg) {
+            var parent = document.getElementById("sats");
+            var json = msg;
+            var size;
+
+            delete json["GPGSV"];
+            while(parent.firstChild){
+                parent.removeChild(parent.firstChild);
+            }
+            for (var key in json) {
+                var div = document.createElement("div");
+                var canvas = document.createElement("canvas");
+
+                div.className = "span1";
+                parent.appendChild(div);
+                div.appendChild(canvas);
+                canvas.width = div.offsetWidth;
+                canvas.height = div.offsetHeight;
+
+                var ctx = canvas.getContext("2d");
+                ctx.fillStyle = db2color(parseInt(json[key]));
+                ctx.fillRect(0, canvas.height, canvas.width, -(parseInt(json[key])*canvas.height)/100);
+                size = canvas.width/2;
+                ctx.font = size.toString() + "px Arial";
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.fillText(json[key], canvas.width/2, canvas.height - ((parseInt(json[key])*canvas.height)/100) - 5);
+                ctx.fillText(key, canvas.width/2, canvas.height - 5);
+            }
+        }
+
+        function db2color(db) {
+            if (db < 10) {
+                return "red";
+            }
+            if (db < 20) {
+                return "orange";
+            }
+            if (db < 30) {
+                return "yellow";
+            }
+            if (db < 50) {
+                return "lightgreen";
+            }
+            if (db >= 50) {
+                return "darkgreen";
+            }
+        }
+
+        function draw_gpgsa(msg) {
+            if ($(msg).length == 1) {
+                var gpgsa = msg['gpgsa'];
+            } else {
+                var gpgsa = msg;
+            }
+            var fix = document.getElementById("fix");
+            var pdop = document.getElementById("pdop");
+            var hdop = document.getElementById("hdop");
+            var vdop = document.getElementById("vdop");
+            switch (parseInt(gpgsa[2])) {
+                case 1:
+                    fix.innerHTML = "FIX: not available";
+                    break;
+                case 2:
+                    fix.innerHTML = "FIX: 2D";
+                    break;
+                case 3:
+                    fix.innerHTML = "FIX: 3D";
+                    break;
+                default:
+                    fix.innerHTML = "FIX: none";
+                    break;
+            }
+            pdop.innerHTML = "PDOP: " + gpgsa[gpgsa.length - 3];
+            hdop.innerHTML = "HDOP: " + gpgsa[gpgsa.length - 2];
+            vdop.innerHTML = "VDOP: " + gpgsa[gpgsa.length - 1];
+        }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8">
@@ -77,115 +163,17 @@
     <div id="info">
       <div id="sats" class="row-fluid"></div>
       <div id="sats_info" class="row-fluid">
-          <div class="span4"><h3 id="fix">FIX: </h3></div>
-          <div class="span4"><h3 id="pdop">PDOP: </h3></div>
-          <div class="span4"><h3 id="hdop">HDOP: </h3></div>
-          <div class="span4"><h3 id="vdop">VDOP: </h3></div>
+          <div class="span4"><h5 id="fix">FIX: </h5></div>
+          <div class="span4"><h5 id="pdop">PDOP: </h5></div>
+          <div class="span4"><h5 id="hdop">HDOP: </h5></div>
+          <div class="span4"><h5 id="vdop">VDOP: </h5></div>
       </div>
       <script>
-        var parent = document.getElementById("sats");
-        var json = {{gpgsv | safe}};
-        var size;
-        delete json["GPGSV"];
-        for (var key in json) {
-            var div = document.createElement("div");
-            var canvas = document.createElement("canvas");
-
-            div.className = "span1";
-            parent.appendChild(div);
-            div.appendChild(canvas);
-            canvas.width = div.offsetWidth;
-            canvas.height = div.offsetHeight;
-
-            var ctx = canvas.getContext("2d");
-            ctx.fillStyle = db2color(parseInt(json[key]));
-            ctx.fillRect(0, canvas.height, canvas.width, -(parseInt(json[key])*canvas.height)/100);
-            size = canvas.width/2;
-            ctx.font = size.toString() + "px Arial";
-            ctx.fillStyle = "black";
-            ctx.textAlign = "center";
-            ctx.fillText(json[key], canvas.width/2, canvas.height - ((parseInt(json[key])*canvas.height)/100) - 5);
-            ctx.fillText(key, canvas.width/2, canvas.height - 5);
-        }
-
-        function db2color(db) {
-            if (db < 10) {
-                return "red";
-            }
-            if (db < 20) {
-                return "orange";
-            }
-            if (db < 30) {
-                return "yellow";
-            }
-            if (db < 50) {
-                return "lightgreen";
-            }
-            if (db >= 50) {
-                return "darkgreen";
-            }
-        }
+        draw_gpgsv({{gpgsv | safe}});
       </script>
       <script>
-        var gpgsa = {{gpgsa | safe}};
-        var fix = document.getElementById("fix");
-        var pdop = document.getElementById("pdop");
-        var hdop = document.getElementById("hdop");
-        var vdop = document.getElementById("vdop");
-        switch (parseInt(gpgsa[2])) {
-            case 1:
-                fix.innerHTML = "FIX: not available";
-                break;
-            case 2:
-                fix.innerHTML = "FIX: 2D";
-                break;
-            case 3:
-                fix.innerHTML = "FIX: 3D";
-                break;
-            default:
-                fix.innerHTML = "FIX: none";
-                break;
-        }
-        pdop.innerHTML = "PDOP: " + gpgsa[gpgsa.length - 3];
-        hdop.innerHTML = "HDOP: " + gpgsa[gpgsa.length - 2];
-        vdop.innerHTML = "VDOP: " + gpgsa[gpgsa.length - 1];
+        draw_gpgsa({{gpgsa | safe}});
       </script>
-      <!-- <canvas id="myCanvas" width="1000" height="1000"></canvas> -->
-      <!-- <script>
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
-        var json = {{gpgsv | safe}};
-        var cnt = parseInt(json["GPGSV"]);
-        var i;
-        delete json["GPGSV"]
-        i = 0;
-        for (var key in json) {
-                ctx.fillStyle = db2color(parseInt(json[key]));
-                ctx.fillRect(55*i, 200, 50, -2*parseInt(json[key]));
-                ctx.font = "30px Arial";
-                ctx.fillStyle = "black";
-                ctx.fillText(json[key], 10 + (55*i), 190);
-                ctx.fillText(key, 10 + (55*i), 230);
-                i++;
-            }
-        function db2color(db) {
-            if (db < 10) {
-                return "red";
-            }
-            if (db < 20) {
-                return "orange";
-            }
-            if (db < 30) {
-                return "yellow";
-            }
-            if (db < 50) {
-                return "lightgreen";
-            }
-            if (db >= 50) {
-                return "darkgreen";
-            }
-        }
-    </script> -->
     </div>
   </body>
 </html>

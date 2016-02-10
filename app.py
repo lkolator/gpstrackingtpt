@@ -133,11 +133,17 @@ class DeviceHandler(MethodView):
                 get_db().update(device_id, rec['htr'], rec['str'], rec['tpr'], rec['pho'], rec['mod'])
                 return "OK"
             if 'text/plain' in request.headers.get('Content-type'):
-                print request.data
                 if 'GPGSV' in request.data:
+                    gpgsv_d = {}
                     get_db().update_sat(device_id, gpgsv=request.data)
+                    data = request.data.split(',')
+                    for key, val in zip(data[::2], data[1::2]):
+                        gpgsv_d[key] = val
+                    socketio.emit('newgpgsv', gpgsv_d, namespace='/' + str(device_id))
                 if 'GPGSA' in request.data:
                     get_db().update_sat(device_id, gpgsa=request.data)
+                    data = request.data.split(',')
+                    socketio.emit('newgpgsa', {'gpgsa' : data}, namespace='/' + str(device_id))
                 return "OK"
             data = json.loads(request.data, cls=Decoder)
 
@@ -167,7 +173,7 @@ def io_newconn(args):
     data = get_db().get_last(devid)
     if data is None:
         return
-    last_date = get_db().get_dates(devid)[-1]
+    last_date = get_db().get_dates(devid)[0]
 
     print "Refreshing state of... " + str(devid)
     i, addtime, rectime, flags, lat, lon,_ = data
