@@ -55,9 +55,11 @@ class TrackerDatabase(object):
                         device INTEGER PRIMARY KEY \
                         );')
         cur.execute('create table if not exists ' + self.sname +
-                   '(   GPGSV TEXT, \
+                    '(id INTEGER PRIMARY KEY AUTOINCREMENT, \
+                        addtime DATETIME, \
+                        GPGSV TEXT, \
                         GPGSA TEXT, \
-                        device INTEGER PRIMARY KEY \
+                        device INTEGER \
                         );')
 
     def insert(self, device, rectime, flags, lat, lon):
@@ -93,18 +95,30 @@ class TrackerDatabase(object):
     def update_sat(self, device, gpgsv=None, gpgsa=None):
         cur = self.conn.cursor()
         if gpgsv:
-            cur.execute('update ' + self.sname + ' set gpgsv=? where device=?;', (gpgsv, device))
+            cur.execute('insert into ' + self.sname + ' (addtime, gpgsv, device) \
+                        values(DateTime(\'now\'), ?, ?);', (gpgsv, device))
         if gpgsa:
-            cur.execute('update ' + self.sname + ' set gpgsa=? where device=?;', (gpgsa, device))
-        cur.execute('insert or ignore into ' + self.sname +
-                    '(gpgsv, gpgsa, device) \
-                    values(?, ?, ?);', (gpgsv, gpgsa, device))
+            cur.execute('insert into ' + self.sname + ' (addtime, gpgsa, device) \
+                        values(DateTime(\'now\'), ?, ?);', (gpgsa, device))
         self.conn.commit()
 
     def dump_sat(self, device):
         cur = self.conn.cursor()
-        cur.execute('select * from ' + self.sname + ' where device=?;', (device,))
-        return cur.fetchone()
+        cur.execute('select gpgsv from satellitedata where id=(select max(id) \
+                    from satellitedata where device is ' + str(device) +
+                    ' and gpgsv is not null)')
+        try:
+            gpgsv = cur.fetchone()[0]
+        except:
+            gpgsv = None
+        cur.execute('select gpgsa from satellitedata where id=(select max(id) \
+                    from satellitedata where device is ' + str(device) +
+                    ' and gpgsa is not null)')
+        try:
+            gpgsa = cur.fetchone()[0]
+        except:
+            gpgsa = None
+        return gpgsv, gpgsa
 
     def dump_config(self, device):
         cur = self.conn.cursor()
