@@ -1,4 +1,4 @@
-Flask==0.10.1
+flask>=0.12.3
 Flask-Admin==1.1.0
 Flask-SocketIO==1.0
 Jinja2==2.8
@@ -14,7 +14,7 @@ geopy==1.11.0
 gevent==1.0.2
 google-api-python-client==1.4.0
 greenlet==0.4.9
-gunicorn==19.3.0
+gunicorn>=19.5.0
 httplib2==0.9.1
 itsdangerous==0.24
 kombu==3.0.26
